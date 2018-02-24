@@ -200,6 +200,6 @@ public class EntityManagerHelper {
     }
 
     public static enum PERSISTENCE_UNIT {
-        ORACLE11G_PU, SERMED_PRONTUARIO_PU, SERMED_TISS_PU, AGENDAMENTOSERMED_PU
+        DERBYDB_PU, ORACLE11G_PU
     }
 }

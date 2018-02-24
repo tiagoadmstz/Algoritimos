@@ -57,10 +57,10 @@ public class ControleUsuario {
 
         if (USUARIOS.get(usuario.getUsuario()) == 10) {
             EntityManagerHelper emh = new EntityManagerHelper();
-            Usuario user = (Usuario) emh.getObject("from Usuario as user where user.usuario = :paramUser", "paramUser", usuario.getUsuario(), EntityManagerHelper.PERSISTENCE_UNIT.SERMED_PRONTUARIO_PU);
+            Usuario user = (Usuario) emh.getObject("from Usuario as user where user.usuario = :paramUser", "paramUser", usuario.getUsuario(), EntityManagerHelper.PERSISTENCE_UNIT.DERBYDB_PU);
             if (user != null) {
                 user.setBloqueado(true);
-                emh.getOperation(EntityManagerHelper.OPERATION_TYPE.UPDATE, user, EntityManagerHelper.PERSISTENCE_UNIT.SERMED_PRONTUARIO_PU);
+                emh.getOperation(EntityManagerHelper.OPERATION_TYPE.UPDATE, user, EntityManagerHelper.PERSISTENCE_UNIT.DERBYDB_PU);
             }
             USUARIOS.replace(usuario.getUsuario(), USUARIOS.get(usuario.getUsuario()) + 1);
         }
