@@ -346,6 +346,17 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
         return false;
     }
 
+    public boolean deletar(Object object, JFrame form, EntityManagerHelper emh, PERSISTENCE_UNIT persistence_unit, List<JPanel> paineis, List<JComponent> botoes){
+        if(JOptionPane.showConfirmDialog(form, "Deseja deletar o registro?", "Salvar Registro", JOptionPane.YES_NO_OPTION) == 0) {
+            this.setDados();
+            emh.getOperation(EntityManagerHelper.OPERATION_TYPE.DELETE, object, persistence_unit);
+            enableOrDisabelComponentsPanel(paineis, OPERACAO.CANCELAR);
+            setEnableButtons(OPERACAO.CANCELAR, botoes);
+            return true;
+        }
+        return false;
+    }
+    
     public void setEnableButtons(OPERACAO codigoOperacao, List<JComponent> componentes) {
         ManipulaFrames.operacaoEnableOrder(codigoOperacao, componentes);
     }
