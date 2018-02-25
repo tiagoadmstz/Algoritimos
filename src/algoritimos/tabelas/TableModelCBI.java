@@ -8,13 +8,45 @@ package algoritimos.tabelas;
 
 
 import java.util.List;
+import javax.swing.table.AbstractTableModel;
 
 
 /**
  *
  * @author Tiago D. Teixeira
  */
-public abstract class TableModelCBI extends TableModel_CBI{
+public abstract class TableModelCBI extends AbstractTableModel{
+    
+    private String[] columnNames;
+    
+    @Override
+    public String getColumnName(int column) {
+            return columnNames[column];
+    }
+    
+    public void setColmunName(String... columnNames){
+        this.columnNames = columnNames;
+    }
+
+    @Override
+    public int getColumnCount() {
+        return columnNames.length;
+    }
+
+    @Override
+    public Object getValueAt(int rowIndex, int columnIndex) {
+        return null;
+    }
+
+    @Override
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+        return false;
+    }
+    
+    @Override
+    public Class<?> getColumnClass(int columnIndex) {
+        return Object.class;
+    }
     
     public abstract void addObject(Object Object);
     public abstract void removeObject(int rowIndex);

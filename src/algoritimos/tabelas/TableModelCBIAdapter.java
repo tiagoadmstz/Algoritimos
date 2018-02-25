@@ -15,34 +15,53 @@ import java.util.List;
  */
 public class TableModelCBIAdapter extends TableModelCBI{
 
+    private List<Object> lista;
+
+    public TableModelCBIAdapter(List<Object> lista) {
+        this.lista = lista;
+    }
+    
+    @Override
+    public int getRowCount() {
+        return lista.size();
+    }
+    
+    public void setLista(List<Object> lista){
+        this.lista = lista;
+    }
+    
     @Override
     public void addObject(Object Object) {
-        
+        lista.add(Object);
+        fireTableDataChanged();
     }
     
     @Override
     public void removeObject(int rowIndex) {
-        
+        lista.remove(rowIndex);
+        fireTableDataChanged();
     }
 
     @Override
     public Object getObject(int rowIndex) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return lista.get(rowIndex);
     }
 
     @Override
     public void deletarLista() {
-        
+        lista.clear();
+        fireTableDataChanged();
     }
 
     @Override
     public void addLista(List<?> lista) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.lista.addAll(lista);
+        fireTableDataChanged();
     }
 
     @Override
     public List<?> getLista() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return lista;
     }
 
     @Override
