@@ -46,9 +46,9 @@ public final class DefaultCBIHeaderRenderer extends DefaultTableCellRenderer {
     private JButton button = new JButton();
     private JPopupMenu popupMenu = new JPopupMenu();
     DefaultCBIHeaderRendererListener listener = new DefaultCBIHeaderRendererListener();
-    //private ImageIcon imageIcon1 = new ImageIcon(getClass().getResource("/br/com/cbi/images/down.gif"));
-    //private ImageIcon imageIcon2 = new ImageIcon(getClass().getResource("/br/com/cbi/images/down_red.gif"));
-    //private ImageIcon imageIcon3 = new ImageIcon(getClass().getResource("/br/com/cbi/images/iconeCF.gif"));
+    private ImageIcon imageIcon1 = new ImageIcon(getClass().getResource("/br/com/cbi/images/down.gif"));
+    private ImageIcon imageIcon2 = new ImageIcon(getClass().getResource("/br/com/cbi/images/down_red.gif"));
+    private ImageIcon imageIcon3 = new ImageIcon(getClass().getResource("/br/com/cbi/images/iconeCF.gif"));
     private final TableRowSorter sorter;
     private int column = -1;
 
@@ -57,7 +57,7 @@ public final class DefaultCBIHeaderRenderer extends DefaultTableCellRenderer {
     }
 
     private void addFiltros(JLabel label) {
-        //button.setIcon(imageIcon1);
+        button.setIcon(imageIcon1);
         button.setPreferredSize(new Dimension(16, 16));
         button.addActionListener(new ActionListener() {
             @Override
@@ -141,16 +141,16 @@ public final class DefaultCBIHeaderRenderer extends DefaultTableCellRenderer {
 
         JMenuItem m1 = new JMenuItem("Ordenar de A a Z...");
         m1.setActionCommand("AZ");
-        //m1.setIcon(new ImageIcon(getClass().getResource("/br/com/cbi/images/iconeAZ.gif")));
+        m1.setIcon(new ImageIcon(getClass().getResource("/br/com/cbi/images/iconeAZ.gif")));
         m1.addActionListener(listener);
         JMenuItem m2 = new JMenuItem("Ordenar de Z a A...");
         m2.setActionCommand("ZA");
-        //m2.setIcon(new ImageIcon(getClass().getResource("/br/com/cbi/images/iconeZA.gif")));
+        m2.setIcon(new ImageIcon(getClass().getResource("/br/com/cbi/images/iconeZA.gif")));
         m2.addActionListener(listener);
         JMenuItem m3 = new JMenuItem("Limpar filtro de ...");
         m3.setActionCommand("limpar");
         m3.setEnabled(false);
-        //m3.setIcon(imageIcon3);
+        m3.setIcon(imageIcon3);
         m3.addActionListener(listener);
 
         popupMenu.add(m1);
@@ -304,14 +304,14 @@ public final class DefaultCBIHeaderRenderer extends DefaultTableCellRenderer {
                     sorter.setRowFilter(null);
                     System.out.println("Limpando filtros");
                     mi.setEnabled(false);
-                    //button.setIcon(imageIcon1);
+                    button.setIcon(imageIcon1);
                     break;
                 case "igualA":
                     String igual = JOptionPane.showInputDialog(button, "É igual a ...", "Informe o texto a ser filtrado", JOptionPane.PLAIN_MESSAGE);
                     if (!"".equals(igual) && igual != null) {
                         sorter.setRowFilter(RowFilter.regexFilter("^(?i:" + igual + ")$", column));
                         mi.setEnabled(true);
-                        //button.setIcon(imageIcon2);
+                        button.setIcon(imageIcon2);
                     }
                     break;
                 case "diferenteDe":
@@ -319,7 +319,7 @@ public final class DefaultCBIHeaderRenderer extends DefaultTableCellRenderer {
                     if (!"".equals(diferente) && diferente != null) {
                         sorter.setRowFilter(RowFilter.regexFilter("^(?!(?i:" + diferente + ")$)", column));
                         mi.setEnabled(true);
-                        //button.setIcon(imageIcon2);
+                        button.setIcon(imageIcon2);
                     }
                     break;
                 case "comecaCom":
@@ -327,7 +327,7 @@ public final class DefaultCBIHeaderRenderer extends DefaultTableCellRenderer {
                     if (!"".equals(comeca) && comeca != null) {
                         sorter.setRowFilter(RowFilter.regexFilter("^(?i:" + comeca + ").*$", column));
                         mi.setEnabled(true);
-                        //button.setIcon(imageIcon2);
+                        button.setIcon(imageIcon2);
                     }
                     break;
                 case "terminaCom":
@@ -335,7 +335,7 @@ public final class DefaultCBIHeaderRenderer extends DefaultTableCellRenderer {
                     if (!"".equals(termina) && termina != null) {
                         sorter.setRowFilter(RowFilter.regexFilter("^(?i:.*" + termina + ")$", column));
                         mi.setEnabled(true);
-                        //button.setIcon(imageIcon2);
+                        button.setIcon(imageIcon2);
                     }
                     break;
                 case "comtem":
@@ -343,7 +343,7 @@ public final class DefaultCBIHeaderRenderer extends DefaultTableCellRenderer {
                     if (!"".equals(contem) && contem != null) {
                         sorter.setRowFilter(RowFilter.regexFilter("^(?i:.*" + contem + ".*)$", column));
                         mi.setEnabled(true);
-                        //button.setIcon(imageIcon2);
+                        button.setIcon(imageIcon2);
                     }
                     break;
                 case "naoContem":
@@ -351,7 +351,7 @@ public final class DefaultCBIHeaderRenderer extends DefaultTableCellRenderer {
                     if (!"".equals(naoContem) && naoContem != null) {
                         sorter.setRowFilter(RowFilter.regexFilter("^(?!(?i:.*" + naoContem + ".*)$)", column));
                         mi.setEnabled(true);
-                        //button.setIcon(imageIcon2);
+                        button.setIcon(imageIcon2);
                     }
                     break;
                 default:

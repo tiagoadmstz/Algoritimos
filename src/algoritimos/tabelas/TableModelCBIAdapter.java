@@ -7,6 +7,7 @@ package algoritimos.tabelas;
  */
 
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -15,10 +16,13 @@ import java.util.List;
  */
 public class TableModelCBIAdapter extends TableModelCBI{
 
-    private List<Object> lista;
+    protected List<Object> lista;
 
-    public TableModelCBIAdapter(List<Object> lista) {
-        this.lista = lista;
+    public TableModelCBIAdapter() {
+    }
+
+    public TableModelCBIAdapter(List<?> lista) {
+        this.lista = (List<Object>) lista;
     }
     
     @Override
@@ -26,8 +30,8 @@ public class TableModelCBIAdapter extends TableModelCBI{
         return lista.size();
     }
     
-    public void setLista(List<Object> lista){
-        this.lista = lista;
+    public void setLista(List<?> lista){
+        this.lista = (List<Object>) lista;
     }
     
     @Override
