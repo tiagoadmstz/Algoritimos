@@ -12,6 +12,7 @@ import algoritimos.dao.EntityManagerHelper;
 import algoritimos.dao.EntityManagerHelper.PERSISTENCE_UNIT;
 import algoritimos.dao.JPAHelper;
 import algoritimos.frames.ConsultaForm;
+import algoritimos.frames.PesquisaDefaultForm;
 import algoritimos.tabelas.DefaultCBIHeaderRenderer;
 import algoritimos.tabelas.TableModelCBI;
 import algoritimos.util.ManipulaFrames;
@@ -52,7 +53,7 @@ import javax.swing.table.TableRowSorter;
  *
  * @author Tiago D. Teixeira
  */
-public abstract class ListenerCBI implements ActionListener, ListSelectionListener, 
+public abstract class ListenerCBI implements ActionListener, ListSelectionListener,
         KeyListener, MouseListener, FocusListener, ItemListener, WindowListener, CaretListener {
 
     public ListenerCBI() {
@@ -124,7 +125,7 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
             ManipulaFrames.enableDisableComponentJFrame(operation, jp.getComponents());
         });
     }
-    
+
     private void apagarDadosPaineis(List<JPanel> jPanel) {
         jPanel.stream().forEach((jp) -> {
             for (Component cpt : jp.getComponents()) {
@@ -323,6 +324,24 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
         return consulta;
     }
 
+    /**
+     * Este método retorna um formulário de pesquisa padrão simplificado para pesquisa rápidas
+     * 
+     * @param titulo Título do formulário que será mostrado para o usuário
+     * @param model Modelo da tabela contendo os dados de pesquisa
+     * @param modelSolicitante Modelo da tabela onde os dados serão inseridos caso exista, caso não informe 'null'
+     * @param listenerSolicitante Listener do formulário solicitante onde serão inseridos os dados da pesquisa, caso não informe 'null'
+     * @return Retorna um formulário de pesquisa simplificada. Será necessário fazer o setVisible
+     */
+    public PesquisaDefaultForm pesquisar(String titulo, TableModelCBI model, TableModelCBI modelSolicitante, ListenerCBI listenerSolicitante) {
+        PesquisaDefaultForm pesquisa = (PesquisaDefaultForm) ControleInstancias.getInstance(PesquisaDefaultForm.class.getName());
+        if (pesquisa == null) {
+            pesquisa = new PesquisaDefaultForm(titulo, model, listenerSolicitante, modelSolicitante);
+            ControleInstancias.setControleInstancias(PesquisaDefaultForm.class.getName(), pesquisa);
+        }
+        return pesquisa;
+    }
+
     public abstract void deletar();
 
     /**
@@ -348,8 +367,8 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
         return false;
     }
 
-    public boolean deletar(Object object, JFrame form, EntityManagerHelper emh, PERSISTENCE_UNIT persistence_unit, List<JPanel> paineis, List<JComponent> botoes){
-        if(JOptionPane.showConfirmDialog(form, "Deseja deletar o registro?", "Salvar Registro", JOptionPane.YES_NO_OPTION) == 0) {
+    public boolean deletar(Object object, JFrame form, EntityManagerHelper emh, PERSISTENCE_UNIT persistence_unit, List<JPanel> paineis, List<JComponent> botoes) {
+        if (JOptionPane.showConfirmDialog(form, "Deseja deletar o registro?", "Salvar Registro", JOptionPane.YES_NO_OPTION) == 0) {
             this.setDados();
             emh.getOperation(EntityManagerHelper.OPERATION_TYPE.DELETE, object, persistence_unit);
             enableOrDisabelComponentsPanel(paineis, OPERACAO.CANCELAR);
@@ -358,7 +377,7 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
         }
         return false;
     }
-    
+
     public void setEnableButtons(OPERACAO codigoOperacao, List<JComponent> componentes) {
         ManipulaFrames.operacaoEnableOrder(codigoOperacao, componentes);
     }
