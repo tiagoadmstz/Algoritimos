@@ -9,6 +9,7 @@ package algoritimos.listener;
 
 import algoritimos.dao.JPAHelper;
 import algoritimos.util.OPERACAO;
+import javax.swing.event.CaretEvent;
 
 
 /**
@@ -100,6 +101,11 @@ public class ListenerCBIAdapter extends ListenerCBI{
     @Override
     public JPAHelper getJPAHelper() {
         return  null;
+    }
+
+    @Override
+    public void caretUpdate(CaretEvent e) {
+        
     }
     
 }

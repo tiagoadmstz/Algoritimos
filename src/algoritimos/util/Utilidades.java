@@ -137,12 +137,6 @@ public class Utilidades {
         }
         return palavra;
     }
-
-    public static void toggleVisible(Component... comps) {
-        Arrays.asList(comps).stream().forEach(c -> {
-            c.setVisible(!c.isVisible());
-        });
-    }
     
     /**
     * Lista de Look and feels

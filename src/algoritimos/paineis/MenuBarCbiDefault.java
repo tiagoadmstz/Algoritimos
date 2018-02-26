@@ -86,6 +86,12 @@ public class MenuBarCbiDefault extends JMenuBar {
         return itens;
     }
 
+    /**
+     * Este método adiciona itens diferentes a lista de menus vinculandos
+     * as ações as que possuem os mesmo nomes e actionCommands.
+     * 
+     * @param comp Componente que será adicionado;
+     */
     public void addItem(JComponent comp){
         itens.add(comp);
     }

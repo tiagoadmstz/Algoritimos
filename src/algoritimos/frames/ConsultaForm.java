@@ -54,7 +54,7 @@ public class ConsultaForm extends javax.swing.JFrame {
     }
 
     private void setImageIcon() {
-        setIconImage(new ImageIcon(getClass().getResource("/br/com/cbi/images/iconeCBI.gif")).getImage());
+        //setIconImage(new ImageIcon(getClass().getResource("/br/com/cbi/images/iconeCBI.gif")).getImage());
     }
 
     @Override

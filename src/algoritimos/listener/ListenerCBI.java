@@ -42,6 +42,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.event.CaretListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -51,7 +52,8 @@ import javax.swing.table.TableRowSorter;
  *
  * @author Tiago D. Teixeira
  */
-public abstract class ListenerCBI implements ActionListener, ListSelectionListener, KeyListener, MouseListener, FocusListener, ItemListener, WindowListener {
+public abstract class ListenerCBI implements ActionListener, ListSelectionListener, 
+        KeyListener, MouseListener, FocusListener, ItemListener, WindowListener, CaretListener {
 
     public ListenerCBI() {
 

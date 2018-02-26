@@ -5,6 +5,7 @@
  */
 package algoritimos.util;
 
+import algoritimos.beans.JTextFieldCBI;
 import algoritimos.tabelas.TableModelCBI;
 import java.awt.Component;
 import java.awt.Container;
@@ -22,6 +23,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
+import javax.swing.JSlider;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -40,7 +42,7 @@ public class ManipulaFrames {
 
     }
 
-        /**
+    /**
      * Método de manipulação de formulários para ativar e desativar componentes
      * de interface
      *
@@ -55,6 +57,7 @@ public class ManipulaFrames {
         };
 
         map.put(JTextField.class, 0);
+        map.put(JTextFieldCBI.class, 0);
         map.put(JComboBox.class, 0);
         map.put(JScrollPane.class, 0);
         map.put(JTextArea.class, 0);
@@ -62,6 +65,7 @@ public class ManipulaFrames {
         map.put(JButton.class, 0);
         map.put(JCheckBox.class, 0);
         map.put(JRadioButton.class, 0);
+        map.put(JSlider.class, 0);
 
         for (Component cp : components) {
             if (map.get(cp.getClass()) != null) {
@@ -197,6 +201,9 @@ public class ManipulaFrames {
                 } else if (component instanceof JCheckBox) {
                     JCheckBox ck = (JCheckBox) component;
                     ck.setSelected(false);
+                } else if (component instanceof JSlider) {
+                    JSlider sd = (JSlider) component;
+                    sd.setValue(0);
                 }
             }
         }
