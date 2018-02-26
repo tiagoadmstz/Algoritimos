@@ -7,6 +7,8 @@ package algoritimos.tabelas;
  */
 
 
+import algoritimos.regex.REGEX;
+import algoritimos.regex.RegexUtil;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -43,12 +45,12 @@ public final class DefaultCBIHeaderRenderer extends DefaultTableCellRenderer {
     private JTable table = null;
     private MouseEventReposter reporter = null;
     private JPanel editor;
-    private JButton button = new JButton();
-    private JPopupMenu popupMenu = new JPopupMenu();
+    private final JButton button = new JButton();
+    private final JPopupMenu popupMenu = new JPopupMenu();
     DefaultCBIHeaderRendererListener listener = new DefaultCBIHeaderRendererListener();
-    private ImageIcon imageIcon1 = new ImageIcon(getClass().getResource("/br/com/cbi/images/down.gif"));
-    private ImageIcon imageIcon2 = new ImageIcon(getClass().getResource("/br/com/cbi/images/down_red.gif"));
-    private ImageIcon imageIcon3 = new ImageIcon(getClass().getResource("/br/com/cbi/images/iconeCF.gif"));
+    private final ImageIcon imageIcon1 = new ImageIcon(getClass().getResource("/algoritimos/img/down.gif"));
+    private final ImageIcon imageIcon2 = new ImageIcon(getClass().getResource("/algoritimos/img/down_red.gif"));
+    private final ImageIcon imageIcon3 = new ImageIcon(getClass().getResource("/algoritimos/img/iconeCF.gif"));
     private final TableRowSorter sorter;
     private int column = -1;
 
@@ -141,11 +143,11 @@ public final class DefaultCBIHeaderRenderer extends DefaultTableCellRenderer {
 
         JMenuItem m1 = new JMenuItem("Ordenar de A a Z...");
         m1.setActionCommand("AZ");
-        m1.setIcon(new ImageIcon(getClass().getResource("/br/com/cbi/images/iconeAZ.gif")));
+        m1.setIcon(new ImageIcon(getClass().getResource("/algoritimos/img/iconeAZ.gif")));
         m1.addActionListener(listener);
         JMenuItem m2 = new JMenuItem("Ordenar de Z a A...");
         m2.setActionCommand("ZA");
-        m2.setIcon(new ImageIcon(getClass().getResource("/br/com/cbi/images/iconeZA.gif")));
+        m2.setIcon(new ImageIcon(getClass().getResource("/algoritimos/img/iconeZA.gif")));
         m2.addActionListener(listener);
         JMenuItem m3 = new JMenuItem("Limpar filtro de ...");
         m3.setActionCommand("limpar");
@@ -309,7 +311,7 @@ public final class DefaultCBIHeaderRenderer extends DefaultTableCellRenderer {
                 case "igualA":
                     String igual = JOptionPane.showInputDialog(button, "É igual a ...", "Informe o texto a ser filtrado", JOptionPane.PLAIN_MESSAGE);
                     if (!"".equals(igual) && igual != null) {
-                        sorter.setRowFilter(RowFilter.regexFilter("^(?i:" + igual + ")$", column));
+                        sorter.setRowFilter(RowFilter.regexFilter(RegexUtil.getRegex(REGEX.IGUAL, igual), column));
                         mi.setEnabled(true);
                         button.setIcon(imageIcon2);
                     }
@@ -317,7 +319,7 @@ public final class DefaultCBIHeaderRenderer extends DefaultTableCellRenderer {
                 case "diferenteDe":
                     String diferente = JOptionPane.showInputDialog(button, "É Diferente de ...", "Informe o texto a ser filtrado", JOptionPane.PLAIN_MESSAGE);
                     if (!"".equals(diferente) && diferente != null) {
-                        sorter.setRowFilter(RowFilter.regexFilter("^(?!(?i:" + diferente + ")$)", column));
+                        sorter.setRowFilter(RowFilter.regexFilter(RegexUtil.getRegex(REGEX.DIFERENTE, diferente), column));
                         mi.setEnabled(true);
                         button.setIcon(imageIcon2);
                     }
@@ -325,7 +327,7 @@ public final class DefaultCBIHeaderRenderer extends DefaultTableCellRenderer {
                 case "comecaCom":
                     String comeca = JOptionPane.showInputDialog(button, "Começa com ...", "Informe o texto a ser filtrado", JOptionPane.PLAIN_MESSAGE);
                     if (!"".equals(comeca) && comeca != null) {
-                        sorter.setRowFilter(RowFilter.regexFilter("^(?i:" + comeca + ").*$", column));
+                        sorter.setRowFilter(RowFilter.regexFilter(RegexUtil.getRegex(REGEX.COMECACOM, comeca), column));
                         mi.setEnabled(true);
                         button.setIcon(imageIcon2);
                     }
@@ -333,7 +335,7 @@ public final class DefaultCBIHeaderRenderer extends DefaultTableCellRenderer {
                 case "terminaCom":
                     String termina = JOptionPane.showInputDialog(button, "Termina com ...", "Informe o texto a ser filtrado", JOptionPane.PLAIN_MESSAGE);
                     if (!"".equals(termina) && termina != null) {
-                        sorter.setRowFilter(RowFilter.regexFilter("^(?i:.*" + termina + ")$", column));
+                        sorter.setRowFilter(RowFilter.regexFilter(RegexUtil.getRegex(REGEX.TERMINACOM, termina), column));
                         mi.setEnabled(true);
                         button.setIcon(imageIcon2);
                     }
@@ -341,7 +343,7 @@ public final class DefaultCBIHeaderRenderer extends DefaultTableCellRenderer {
                 case "comtem":
                     String contem = JOptionPane.showInputDialog(button, "Contém ...", "Informe o texto a ser filtrado", JOptionPane.PLAIN_MESSAGE);
                     if (!"".equals(contem) && contem != null) {
-                        sorter.setRowFilter(RowFilter.regexFilter("^(?i:.*" + contem + ".*)$", column));
+                        sorter.setRowFilter(RowFilter.regexFilter(RegexUtil.getRegex(REGEX.CONTEM, contem), column));
                         mi.setEnabled(true);
                         button.setIcon(imageIcon2);
                     }
@@ -349,7 +351,7 @@ public final class DefaultCBIHeaderRenderer extends DefaultTableCellRenderer {
                 case "naoContem":
                     String naoContem = JOptionPane.showInputDialog(button, "Não Contém ...", "Informe o texto a ser filtrado", JOptionPane.PLAIN_MESSAGE);
                     if (!"".equals(naoContem) && naoContem != null) {
-                        sorter.setRowFilter(RowFilter.regexFilter("^(?!(?i:.*" + naoContem + ".*)$)", column));
+                        sorter.setRowFilter(RowFilter.regexFilter(RegexUtil.getRegex(REGEX.NAOCONTEM, naoContem), column));
                         mi.setEnabled(true);
                         button.setIcon(imageIcon2);
                     }

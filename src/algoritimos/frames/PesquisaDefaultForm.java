@@ -10,10 +10,11 @@ import algoritimos.listener.ListenerCBIAdapter;
 import algoritimos.regex.REGEX;
 import algoritimos.regex.RegexUtil;
 import algoritimos.tabelas.TableModelCBI;
+import algoritimos.util.OPERACAO;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.ItemEvent;
 import java.awt.event.MouseEvent;
-import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -40,19 +41,20 @@ public final class PesquisaDefaultForm extends javax.swing.JFrame {
      * popular o form com a pesquisa
      * @param modelSolicitante Model que solicitou a pesquisa, caso for inserir
      * dados em outra tabela
-     * @param lista Lista que será utilizada na pesquisa
+     * @param tamanho Array com o tamanho de cada coluna da pesquisa
      */
-    public PesquisaDefaultForm(String legenda, TableModelCBI model, ListenerCBI listenerSolicitante, TableModelCBI modelSolicitante, List<?> lista) {
+    public PesquisaDefaultForm(String legenda, TableModelCBI model, ListenerCBI listenerSolicitante, TableModelCBI modelSolicitante, int... tamanho) {
         initComponents();
+        listener = new PesquisaDefaultListener(this);
         this.setLegenda(legenda);
-        this.setTableModel(model, lista);
+        this.setTableModel(model);
         this.setTableModelSolicitante(modelSolicitante);
         this.setListenerSolicitante(listenerSolicitante);
-        listener = new PesquisaDefaultListener(this);
+        this.setColumnSize(tamanho);
     }
 
-    public void setTableModel(TableModelCBI tableModel, List<?> lista) {
-        listener.addModel(tableModel, lista);
+    public void setTableModel(TableModelCBI tableModel) {
+        listener.addModel(tableModel);
     }
 
     public void setTableModelSolicitante(TableModelCBI tableModelSolicitante) {
@@ -164,6 +166,7 @@ public final class PesquisaDefaultForm extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
 
@@ -195,20 +198,25 @@ public final class PesquisaDefaultForm extends javax.swing.JFrame {
         public void attachListener() {
             form.getTbPesquisa().addMouseListener(this);
             form.getTxtPesquisa().addCaretListener(this);
+            form.getCbPesqusia().addItemListener(this);
         }
 
-        public void addModel(TableModelCBI model, List<?> lista) {
-            model.addLista(lista);
+        public void addModel(TableModelCBI model) {
+            this.model = model;
+            form.getTbPesquisa().setModel(model);
             sorter = new TableRowSorter(model);
             setColumnFilter(tbPesquisa, sorter);
-            form.getTbPesquisa().setModel(model);
+            form.getTbPesquisa().setRowSorter(sorter);
             for (int i = 0; i < model.getColumnCount(); i++) {
                 form.getCbPesqusia().addItem(model.getColumnName(i));
             }
+            setColumnDesign(tbPesquisa, renderer);
         }
-
+        
         public void setColumnSize(int... tamanho) {
-            this.setColumnSize(form.getTbPesquisa(), tamanho);
+            if(tamanho != null && tamanho.length > 0){
+                this.setColumnSize(form.getTbPesquisa(), tamanho);
+            }
         }
 
         /**
@@ -247,19 +255,28 @@ public final class PesquisaDefaultForm extends javax.swing.JFrame {
             if (e.getClickCount() == 2) {
                 if (listenerSolicitante != null) {
                     listenerSolicitante.setDados(model.getObject(form.getTbPesquisa().getSelectedRow()));
+                    listenerSolicitante.getDados();
+                    listenerSolicitante.setEnableButtons(OPERACAO.SALVAR);
+                    form.dispose();
                 }
 
                 if (modelSolicitante != null) {
                     modelSolicitante.addObject(model.getObject(form.getTbPesquisa().getSelectedRow()));
+                    form.dispose();
                 }
             }
-
-            form.dispose();
         }
 
         @Override
         public void caretUpdate(CaretEvent e) {
             sorter.setRowFilter(RowFilter.regexFilter(RegexUtil.getRegex(REGEX.CONTEM, form.getTxtPesquisa().getText()), form.getCbPesqusia().getSelectedIndex()));
+        }
+
+        @Override
+        public void itemStateChanged(ItemEvent e) {
+            if(e.getStateChange() == ItemEvent.SELECTED || e.getStateChange() == ItemEvent.DESELECTED){
+                form.getTxtPesquisa().requestFocus();
+            }
         }
 
         private class PesquisaRenderer extends DefaultTableCellRenderer {

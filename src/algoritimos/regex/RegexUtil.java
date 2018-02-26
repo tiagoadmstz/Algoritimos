@@ -5,9 +5,6 @@
  */
 package algoritimos.regex;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  *
  * @author Tiago
@@ -16,10 +13,15 @@ public class RegexUtil {
 
     private static String[] listaRegex = new String[]{
         "^(?i:(<>.*))$",
-        "^(?i:(.*<>.*))$"
+        "^(?i:.*<>.*)$",
+        "^(?i:<>)$",
+        "^(?!(?i:<>)$)",
+        "^(?i:.*<>)$",
+        "^(?!(?i:.*<>.*)$)"
     };
     
     public static String getRegex(REGEX regex, String texto){
+        texto = regex == REGEX.CONTEM || regex == REGEX.NAOCONTEM ? texto.replace(" ", ".*") : texto;
         return listaRegex[regex.getValue()].replace("<>", texto);
     }
     

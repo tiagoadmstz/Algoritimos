@@ -11,7 +11,7 @@ package algoritimos.regex;
  */
 public enum REGEX {
     
-    COMECACOM(0), CONTEM(1);
+    COMECACOM(0), CONTEM(1), IGUAL(2), DIFERENTE(3), TERMINACOM(4), NAOCONTEM(5);
     
     private int value;
 
