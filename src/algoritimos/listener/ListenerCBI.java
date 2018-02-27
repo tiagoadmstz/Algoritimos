@@ -5,6 +5,8 @@
  */
 package algoritimos.listener;
 
+import algoritimos.annotations.GETTER;
+import algoritimos.annotations.SETTER;
 import algoritimos.beans.JTextFieldCBI;
 import algoritimos.calculos.Datas;
 import algoritimos.controle.ControleInstancias;
@@ -31,7 +33,11 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -198,11 +204,61 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
     public abstract void setDados();
 
     /**
+     * Este método utiliza recursos de refletion com annotations para recuperar
+     * dados dos formulários dinâmicamente
+     *
+     * @param form Formulário que será trabalhado
+     * @param ob Objeto que é representado pelo formulário
+     */
+    public void setDados(JFrame form, Object ob) {
+        for (Method mt : form.getClass().getMethods()) { //pega todos os metodos do formulário
+            if (mt.isAnnotationPresent(GETTER.class)) { //verifica se são do tipo GETTER
+                GETTER get = mt.getAnnotation(GETTER.class); //recupera referencia da anotação
+                try {
+                    //pega o método set do objeto de referencia
+                    Method sm = ob.getClass().getMethod(get.metodoSet(), get.tipoSet());
+                    //verifica o tipo de retorno do getter
+                    if (mt.getReturnType() == JTextFieldCBI.class | mt.getReturnType() == JTextField.class) {
+                        //pega o método set referenciado na variável sm e invoca o método getText do TextField
+                        sm.invoke(ob, (mt.invoke(form).getClass().getMethod("getText")).invoke(mt.invoke(form)));
+                    } else if (mt.getReturnType() == JComboBox.class) {
+                        sm.invoke(ob, (String) (mt.invoke(form).getClass().getMethod("getSelectedItem")).invoke(mt.invoke(form)));
+                    }
+                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
+                    Logger.getLogger(ListenerCBI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }
+
+    /**
      * Pega os dados de um objeto e mostra nos campos do formulário EX:
      * form.getTxtQuantidade().setText(produto.getQuantidade());
      */
     public abstract void getDados();
 
+    /**
+     * Este método popula o formulário de forma dinamica utilizando recursos de refletion com annotations
+     * 
+     * @param form Formulário que será trabalhado
+     * @param ob Objeto representado pelo formulário
+     */
+    public void getDados(JFrame form, Object ob){
+        for (Method mt : form.getClass().getMethods()) { //pega todos os metodos do formulário
+            if (mt.isAnnotationPresent(SETTER.class)) { //verifica se são do tipo SETTER
+                SETTER set = mt.getAnnotation(SETTER.class); //recupera referencia da anotação
+                try {
+                    //pega o método get do objeto de referencia
+                    Method sm = ob.getClass().getMethod(set.metodoGet());
+                    //pega o método set referenciado na variável sm e invoca o método getText do TextField
+                    mt.invoke(form).getClass().getMethod("setText", set.tipoGet()).invoke(mt.invoke(form), sm.invoke(ob));
+                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
+                    Logger.getLogger(ListenerCBI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }
+    
     public abstract void setMaxLegthTextFields();
 
     public abstract void setEnableButtons(OPERACAO codFunction);
@@ -325,13 +381,17 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
     }
 
     /**
-     * Este método retorna um formulário de pesquisa padrão simplificado para pesquisa rápidas
-     * 
+     * Este método retorna um formulário de pesquisa padrão simplificado para
+     * pesquisa rápidas
+     *
      * @param titulo Título do formulário que será mostrado para o usuário
      * @param model Modelo da tabela contendo os dados de pesquisa
-     * @param modelSolicitante Modelo da tabela onde os dados serão inseridos caso exista, caso não informe 'null'
-     * @param listenerSolicitante Listener do formulário solicitante onde serão inseridos os dados da pesquisa, caso não informe 'null'
-     * @return Retorna um formulário de pesquisa simplificada. Será necessário fazer o setVisible
+     * @param modelSolicitante Modelo da tabela onde os dados serão inseridos
+     * caso exista, caso não informe 'null'
+     * @param listenerSolicitante Listener do formulário solicitante onde serão
+     * inseridos os dados da pesquisa, caso não informe 'null'
+     * @return Retorna um formulário de pesquisa simplificada. Será necessário
+     * fazer o setVisible
      */
     public PesquisaDefaultForm pesquisar(String titulo, TableModelCBI model, TableModelCBI modelSolicitante, ListenerCBI listenerSolicitante) {
         PesquisaDefaultForm pesquisa = (PesquisaDefaultForm) ControleInstancias.getInstance(PesquisaDefaultForm.class.getName());
