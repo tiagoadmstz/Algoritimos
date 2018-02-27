@@ -238,12 +238,13 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
     public abstract void getDados();
 
     /**
-     * Este método popula o formulário de forma dinamica utilizando recursos de refletion com annotations
-     * 
+     * Este método popula o formulário de forma dinamica utilizando recursos de
+     * refletion com annotations
+     *
      * @param form Formulário que será trabalhado
      * @param ob Objeto representado pelo formulário
      */
-    public void getDados(JFrame form, Object ob){
+    public void getDados(JFrame form, Object ob) {
         for (Method mt : form.getClass().getMethods()) { //pega todos os metodos do formulário
             if (mt.isAnnotationPresent(SETTER.class)) { //verifica se são do tipo SETTER
                 SETTER set = mt.getAnnotation(SETTER.class); //recupera referencia da anotação
@@ -251,14 +252,16 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
                     //pega o método get do objeto de referencia
                     Method sm = ob.getClass().getMethod(set.metodoGet());
                     //pega o método set referenciado na variável sm e invoca o método getText do TextField
-                    mt.invoke(form).getClass().getMethod("setText", set.tipoGet()).invoke(mt.invoke(form), sm.invoke(ob));
+                    if (mt.getReturnType() == JTextFieldCBI.class | mt.getReturnType() == JTextField.class) {
+                        mt.invoke(form).getClass().getMethod("setText", set.tipoGet()).invoke(mt.invoke(form), sm.invoke(ob));
+                    }
                 } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
                     Logger.getLogger(ListenerCBI.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
     }
-    
+
     public abstract void setMaxLegthTextFields();
 
     public abstract void setEnableButtons(OPERACAO codFunction);
