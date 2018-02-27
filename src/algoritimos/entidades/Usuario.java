@@ -13,6 +13,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 /**
@@ -22,6 +24,9 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "USUARIOS")
 @Access(AccessType.PROPERTY)
+@NamedQueries({
+    @NamedQuery(name = "usuario.findAll", query = "SELECT u FROM Usuario AS u ORDER BY u.nomeUsuario")
+})
 //@SequenceGenerator(name = "usuario_seq", sequenceName = "seq_usuario", initialValue = 1, allocationSize = 1)
 public class Usuario implements Serializable {
 
@@ -101,4 +106,11 @@ public class Usuario implements Serializable {
         this.bloqueado = bloqueado;
     }
 
+    public void clonar(Usuario usuario) {
+        this.id = usuario.getId();
+        this.nomeUsuario = usuario.getNomeUsuario();
+        this.usuario = usuario.getUsuario();
+        this.senha = usuario.getSenha();
+        this.bloqueado = usuario.isBloqueado();
+    }
 }

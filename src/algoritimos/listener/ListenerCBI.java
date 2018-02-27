@@ -21,6 +21,7 @@ import algoritimos.util.ManipulaFrames;
 import algoritimos.util.OPERACAO;
 import algoritimos.util.ScrollPaneUtil;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -68,6 +69,7 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        //form.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         switch (e.getActionCommand()) {
             case "novo":
                 break;
@@ -88,6 +90,7 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
             case "pesquisar":
                 break;
         }
+        //form.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
 
     @Override
