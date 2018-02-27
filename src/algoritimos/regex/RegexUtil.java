@@ -39,7 +39,7 @@ public class RegexUtil {
      * @return Texto modificado contendo a expressão regular
      */
     public static String getRegex(REGEX regex, String texto) {
-        texto = regex == REGEX.CONTEM || regex == REGEX.NAOCONTEM ? texto.replace(" ", ".*") : texto;
+        texto = regex == REGEX.CONTEM || regex == REGEX.NAOCONTEM ? texto.replaceAll(" ", ".*") : texto;
         return listaRegex[regex.getValue()].replace("<>", texto);
     }
 
