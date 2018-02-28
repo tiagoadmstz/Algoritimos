@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultCellEditor;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -218,14 +219,23 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
             if (mt.isAnnotationPresent(GETTER.class)) { //verifica se são do tipo GETTER
                 GETTER get = mt.getAnnotation(GETTER.class); //recupera referencia da anotação
                 try {
-                    //pega o método set do objeto de referencia
+                    //pega o método get do objeto de referencia
                     Method sm = ob.getClass().getMethod(get.metodoSet(), get.tipoSet());
+
                     //verifica o tipo de retorno do getter
                     if (mt.getReturnType() == JTextFieldCBI.class | mt.getReturnType() == JTextField.class) {
                         //pega o método set referenciado na variável sm e invoca o método getText do TextField
                         sm.invoke(ob, (mt.invoke(form).getClass().getMethod("getText")).invoke(mt.invoke(form)));
                     } else if (mt.getReturnType() == JComboBox.class) {
-                        sm.invoke(ob, (String) (mt.invoke(form).getClass().getMethod("getSelectedItem")).invoke(mt.invoke(form)));
+                        String metodo = null;
+                        if (get.tipoSet() == String.class) {
+                            metodo = "getSelectedItem";
+                        } else if (get.tipoSet() == Integer.class) {
+                            metodo = "getSelectedIndex";
+                        }
+                        sm.invoke(ob, (String) (mt.invoke(form).getClass().getMethod(metodo)).invoke(mt.invoke(form)));
+                    } else if (mt.getReturnType() == JCheckBox.class) {
+                        sm.invoke(ob, (mt.invoke(form).getClass().getMethod("isSelected")).invoke(mt.invoke(form)));
                     }
                 } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
                     Logger.getLogger(ListenerCBI.class.getName()).log(Level.SEVERE, null, ex);
@@ -257,6 +267,16 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
                     //pega o método set referenciado na variável sm e invoca o método getText do TextField
                     if (mt.getReturnType() == JTextFieldCBI.class | mt.getReturnType() == JTextField.class) {
                         mt.invoke(form).getClass().getMethod("setText", set.tipoGet()).invoke(mt.invoke(form), sm.invoke(ob));
+                    } else if (mt.getReturnType() == JComboBox.class) {
+                        String metodo = null;
+                        if (set.tipoGet() == String.class) {
+                            metodo = "setSelectedItem";
+                        } else if (set.tipoGet() == Integer.class) {
+                            metodo = "setSelectedIndex";
+                        }
+                        mt.invoke(form).getClass().getMethod(metodo, set.tipoGet()).invoke(mt.invoke(form), sm.invoke(ob));
+                    } else if (mt.getReturnType() == JCheckBox.class) {
+                        mt.invoke(form).getClass().getMethod("setSelected", set.tipoGet()).invoke(mt.invoke(form), sm.invoke(ob));
                     }
                 } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
                     Logger.getLogger(ListenerCBI.class.getName()).log(Level.SEVERE, null, ex);
