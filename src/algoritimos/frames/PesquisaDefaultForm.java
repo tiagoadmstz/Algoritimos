@@ -13,9 +13,11 @@ import algoritimos.tabelas.TableModelCBI;
 import algoritimos.util.OPERACAO;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseEvent;
 import javax.swing.JComboBox;
+import javax.swing.JMenuItem;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.RowFilter;
@@ -97,6 +99,14 @@ public final class PesquisaDefaultForm extends javax.swing.JFrame {
         this.tbPesquisa = tbPesquisa;
     }
 
+    public JMenuItem getItemFechar() {
+        return itemFechar;
+    }
+
+    public void setItemFechar(JMenuItem itemFechar) {
+        this.itemFechar = itemFechar;
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -111,6 +121,9 @@ public final class PesquisaDefaultForm extends javax.swing.JFrame {
         txtPesquisa = new javax.swing.JTextField();
         scPesquisa = new javax.swing.JScrollPane();
         tbPesquisa = new javax.swing.JTable();
+        menuBar = new javax.swing.JMenuBar();
+        menuArquivo = new javax.swing.JMenu();
+        itemFechar = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Pesquisa");
@@ -154,6 +167,16 @@ public final class PesquisaDefaultForm extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
+        menuBar.setPreferredSize(new java.awt.Dimension(0, 0));
+
+        itemFechar.setText("Fechar");
+        itemFechar.setActionCommand("fechar");
+        menuArquivo.add(itemFechar);
+
+        menuBar.add(menuArquivo);
+
+        setJMenuBar(menuBar);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -172,6 +195,9 @@ public final class PesquisaDefaultForm extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JComboBox cbPesqusia;
+    private javax.swing.JMenuItem itemFechar;
+    private javax.swing.JMenu menuArquivo;
+    private javax.swing.JMenuBar menuBar;
     private javax.swing.JPanel painelMain;
     private javax.swing.JScrollPane scPesquisa;
     private javax.swing.JTable tbPesquisa;
@@ -199,6 +225,17 @@ public final class PesquisaDefaultForm extends javax.swing.JFrame {
             form.getTbPesquisa().addMouseListener(this);
             form.getTxtPesquisa().addCaretListener(this);
             form.getCbPesqusia().addItemListener(this);
+            form.getItemFechar().addActionListener(this);
+            fecharESC(form.getItemFechar());
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            switch(e.getActionCommand()){
+                case "fechar":
+                    fechar(form);
+                    break;
+            }
         }
 
         public void addModel(TableModelCBI model) {
