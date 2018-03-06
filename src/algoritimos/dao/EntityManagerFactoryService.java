@@ -20,6 +20,7 @@ public class EntityManagerFactoryService {
 
     private static final Logger LOG = Logger.getLogger(EntityManagerFactoryService.class);
     private static final Map<String, EntityManagerFactory> factories = new HashMap<String, EntityManagerFactory>();
+    private static final Map<String, String> properties = new HashMap<String, String>();
 
     /**
      * This method returns an entity manager factory for a target persistence
@@ -28,12 +29,19 @@ public class EntityManagerFactoryService {
      * @param persistenceUnitName
      * @return an entity manager factory for a target persistence unit
      */
-    public static EntityManagerFactory getEntityManagerFactory(String persistenceUnitName) {
+    public static EntityManagerFactory getEntityManagerFactory(String persistenceUnitName, Map<String, String> propMap) {
         if (factories.containsKey(persistenceUnitName)) {
             return factories.get(persistenceUnitName);
         }
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory(persistenceUnitName);
+
+        EntityManagerFactory emf = null;
         
+        if (!propMap.isEmpty()) {
+            emf = Persistence.createEntityManagerFactory(persistenceUnitName, propMap);
+        } else {
+            emf = Persistence.createEntityManagerFactory(persistenceUnitName);
+        }
+
         factories.put(persistenceUnitName, emf);
         return emf;
     }
@@ -49,5 +57,5 @@ public class EntityManagerFactoryService {
         });
         factories.clear();
     }
-    
+
 }

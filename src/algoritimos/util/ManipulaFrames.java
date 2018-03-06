@@ -21,6 +21,7 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
@@ -66,6 +67,7 @@ public class ManipulaFrames {
         map.put(JCheckBox.class, 0);
         map.put(JRadioButton.class, 0);
         map.put(JSlider.class, 0);
+        map.put(JPasswordField.class, 0);
 
         for (Component cp : components) {
             if (map.get(cp.getClass()) != null) {

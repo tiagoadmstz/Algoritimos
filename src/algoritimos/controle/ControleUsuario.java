@@ -49,7 +49,7 @@ public class ControleUsuario {
         if (USUARIOS.get(usuario.getUsuario()) == null) {
             USUARIOS.put(usuario.getUsuario(), 0);
         }
-
+        
         if (USUARIOS.get(usuario.getUsuario()) < 10) {
             USUARIOS.replace(usuario.getUsuario(), USUARIOS.get(usuario.getUsuario()) + 1);
             JOptionPane.showMessageDialog(frame, "Login de usuário ou senha não conferem!\nVocê tem " + (10 - USUARIOS.get(usuario.getUsuario())) + " tentativas restantes");

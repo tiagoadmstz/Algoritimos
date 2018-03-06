@@ -5,6 +5,7 @@
  */
 package algoritimos.paineis;
 
+import java.awt.Cursor;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JComponent;
@@ -29,6 +30,7 @@ public class MenuBarCbiDefault extends JMenuBar {
     private JMenuItem itemDeletar;
     private JMenuItem itemPesquisar;
     private final List<JComponent> itens = new ArrayList();
+    private final Cursor defCursor = Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
 
     public MenuBarCbiDefault() {
         super();
@@ -60,6 +62,7 @@ public class MenuBarCbiDefault extends JMenuBar {
         itemPesquisar = new JMenuItem("Pesquisar");
         itemPesquisar.setActionCommand("pesquisar");
 
+        menuArquivo.setCursor(defCursor);
         menuArquivo.add(itemNovo);
         menuArquivo.add(itemEditar);
         menuArquivo.add(itemAlterar);
@@ -78,7 +81,11 @@ public class MenuBarCbiDefault extends JMenuBar {
         itens.add(itemImprimir);
         itens.add(itemDeletar);
         itens.add(itemPesquisar);
-        
+
+        itens.forEach(it -> {
+            it.setCursor(defCursor);
+        });
+
         this.add(menuArquivo);
     }
 
@@ -87,15 +94,15 @@ public class MenuBarCbiDefault extends JMenuBar {
     }
 
     /**
-     * Este método adiciona itens diferentes a lista de menus vinculandos
-     * as ações as que possuem os mesmo nomes e actionCommands.
-     * 
+     * Este método adiciona itens diferentes a lista de menus vinculandos as
+     * ações as que possuem os mesmo nomes e actionCommands.
+     *
      * @param comp Componente que será adicionado;
      */
-    public void addItem(JComponent comp){
+    public void addItem(JComponent comp) {
         itens.add(comp);
     }
-    
+
     public JMenu getMenuArquivo() {
         return menuArquivo;
     }

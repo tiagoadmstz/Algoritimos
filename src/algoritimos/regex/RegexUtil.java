@@ -17,7 +17,8 @@ public class RegexUtil {
         "^(?i:<>)$",
         "^(?!(?i:<>)$)",
         "^(?i:.*<>)$",
-        "^(?!(?i:.*<>.*)$)"
+        "^(?!(?i:.*<>.*)$)",
+        "(^(.*[A-Z].*)&&(.*[\\d].*)&&(.*[\\p{Punct}].*)$)"
     };
 
     /**
@@ -44,40 +45,133 @@ public class RegexUtil {
     }
 
     /**
-     * Metacaracteres
-     * . -> busca qualquer caracter
-     * \d -> busca qualquer número [0-9]
-     * \D -> busca qualquer caracter que não seja número [^0-9]
-     * \w -> busca qualquer caracter de letras e números [a-zA-Z_0-9]
-     * \W -> busca qualquer caracter que não sejam letras e números [^\w]
-     * \s -> busca qualquer caracter de espaço em branco, tabulações [\t\n\x0B\f\r]
-     * \S -> busca qualquer caracter sem espaço em branco [^\s]
-     * Modificadores
-     * (?i:) -> ignora maisculas e minusculas
-     * (?m:) -> trabalha multilinhas
-     * (?s:) -> faz com que o caracter encontre novas linhas
-     * (?x:) -> permite a inclusão de espaços e comentários
-     *Quantificadores
-     * X{n} -> X procura a ocorrencia de caracteres n vezes
-     * X{n,} -> X pelo menos n vezes
-     * X{n,m} -> X pelo menos n vezes não mais que m vezes
-     * X? -> 0 ou 1 vezes
-     * X* -> 0 ou mais vezes
-     * X+ -> 1 ou mais vezes
-     * Metacaracteres de fronteira
-     * ^ -> inicia
-     * $ -> finaliza
-     * | -> ou (condição)
-     * Agrupadores
-     * [...] -> Agrupamento
-     * [a-z] -> alcance
-     * [a-e][i-u] -> união
-     * [a-z&&[aeiou]] -> interseção
-     * [^abc] -> exeção
-     * [a-z&&^[m-p]] -> subtração
-     * \x -> fuga literal (usa um caracter propriamente dito sem interromper a expressão)
-     * 
-     * [a-z] -> representa qualquer letra minúscula do alfabeto [A-Z] ->
+     * <ul>Metacaracteres
+     * <li>. -> busca qualquer caracter </li>
+     * <li>\d -> busca qualquer número [0-9] </li>
+     * <li>\D -> busca qualquer caracter que não seja número [^0-9]</li>
+     * <li>\w -> busca qualquer caracter de letras e números [a-zA-Z_0-9] </li>
+     * <li>\W -> busca qualquer caracter que não sejam letras e números [^\w]</li>
+     * <li>\s -> busca qualquer caracter de espaço em branco, tabulações [\t\n\x0B\f\r] </li>
+     * <li>\S -> busca qualquer caracter sem espaço em branco [^\s]</li>
+     * <li>\0n -> busca caracteres com valor octal 0n (0 <= n <= 7)</li>
+     * <li>\0nn -> busca caracteres com valor octal 0nn (0 <= n <= 7)</li>
+     * <li>\0mnn -> busca caracteres com valor octal 0mnn (0 <= m <= 3, 0 <= n <= 7)</li>
+     * <li>\xhh -> busca caracteres com valor hexadecimal 0xhh </li>
+     * <li>\ uhhhh -> busca caracteres com valor hexadecimal com valor hexadecimal 0xhhhh</li>
+     * <li>\x{h...h} -> busca caracteres com valor hexadecimal 0xh...h (Character.MIN_CODE_POINT <= 0xh...h <=  Character.MAX_CODE_POINT)</li>
+     * <li>\t -> busca o caracter de tabulação tab ('\u0009')</li>
+     * <li>\n -> busca o caracter de quebra de linha ENTER ('\u000A')</li>
+     * <li>\r -> busca o caracter de carriage-return ('\u000D')</li>
+     * <li>\f -> busca o caracter de marcação rodapé de formulário form-feed ('\u000C')</li>
+     * <li>\a -> busca o caracter de alerta (bell) ('\u0007')</li>
+     * <li>\e -> busca o caracter de espaço ('\u001B')</li>
+     * <li>\cx -> busca o caracter de controle representado por x</li>
+     * </ul>
+     * <ul>Modificadores
+     * <li>(?i:) -> ignora maisculas e minusculas </li>
+     * <li>(?m:) -> trabalha multilinhas</li>
+     * <li>(?s:) -> faz com que o caracter encontre novas linhas </li>
+     * <li>(?x:) -> permite a inclusão de espaços e comentários</li>
+     * </ul>
+     * <ul>Quantificadores 
+     * <li>X{n} -> X procura a ocorrencia de caracteres n vezes </li>
+     * <li>X{n,} -> X pelo menos n vezes </li>
+     * <li>X{n,m} -> X pelo menos n vezes não mais que m vezes </li>
+     * <li>X? -> 0 ou 1 vezes </li>
+     * <li>X* -> 0 ou mais vezes </li>
+     * <li>X+ -> 1 ou mais vezes </li>
+     * </ul>
+     * <ul>Metacaracteres de fronteira 
+     * <li>^ -> inicia</li>
+     * <li>$ -> finaliza </li>
+     * <li>| -> ou (condição)</li>
+     * </ul>
+     * <ul>Agrupadores 
+     * <li>[...] -> Agrupamento </li>
+     * <li>[a-z] -> alcance </li>
+     * <li>[a-e][i-u] -> união </li>
+     * <li>[a-z&&[aeiou]] -> interseção </li>
+     * <li>[^abc] -> exeção </li>
+     * <li>[a-z&&^[m-p]] -> subtração </li>
+     * <li>\x -> fuga literal (usa um caracter propriamente dito sem interromper a expressão)</li>
+     * </ul>
+     *<ul>POSIX
+     * <li>\p{Lower} busca caracteres de letras em minusculo: [a-z]</li>
+     * <li>\p{Upper} busca caracteres de letras em maisculo:[A-Z]</li>
+     * <li>\p{ASCII} busca qualquer caracter da tabela ASCII:[\x00-\x7F]</li>
+     * <li>\p{Alpha} busca qualquer caracter de letras maisculas ou minusculas:[\p{Lower}\p{Upper}] ou [a-zA-Z]</li>
+     * <li>\p{Digit} busca qualquer número: [0-9]</li>
+     * <li>\p{Alnum} busca qualquer caracter alphanumerico:[\p{Alpha}\p{Digit}]</li>
+     * <li>\p{Punct} busca por caracteres especiais de pontuação: !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~</li>
+     * <li>\p{Graph} busca por caracteres gráficos ou seja letras com acentuação: [\p{Alnum}\p{Punct}]</li>
+     * <li>\p{Print} busca por caracteres imprimivéis: [\p{Graph}\x20]</li>
+     * <li>\p{Blank} busca por espaços ou tabulação: [ \t]</li>
+     * <li>\p{Cntrl} busca por caracteres de controle: [\x00-\x1F\x7F]</li>
+     * <li>\p{XDigit} busca por digitos hexadecimais: [0-9a-fA-F]</li>
+     * <li>\p{Space} busca por qualquer tipo de espaço em branco: [ \t\n\x0B\f\r]</li>
+     *</ul>
+     *<ul>java.lang.Character classes (simple java character type)
+     *\p{javaLowerCase} 	Equivalent to java.lang.Character.isLowerCase()
+     *\p{javaUpperCase} 	Equivalent to java.lang.Character.isUpperCase()
+     *\p{javaWhitespace} 	Equivalent to java.lang.Character.isWhitespace()
+     *\p{javaMirrored} 	Equivalent to java.lang.Character.isMirrored()
+     * </ul>
+     *<ul>Classes for Unicode scripts, blocks, categories and binary properties
+     *\p{IsLatin} 	A Latin script character (script)
+     *\p{InGreek} 	A character in the Greek block (block)
+     *\p{Lu} 	An uppercase letter (category)
+     *\p{IsAlphabetic} 	An alphabetic character (binary property)
+     *\p{Sc} 	A currency symbol
+     *\P{InGreek} 	Any character except one in the Greek block (negation)
+     *[\p{L}&&[^\p{Lu}]]  	Any letter except an uppercase letter (subtraction)
+     * </ul>
+     *<ul>Boundary matchers
+     *^ 	The beginning of a line
+     *$ 	The end of a line
+     *\b 	A word boundary
+     *\B 	A non-word boundary
+     *\A 	The beginning of the input
+     *\G 	The end of the previous match
+     *\Z 	The end of the input but for the final terminator, if any
+     *\z 	The end of the input
+     * </ul>
+     *<ul>Reluctant quantifiers
+     *X?? 	X, once or not at all
+     *X*? 	X, zero or more times
+     *X+? 	X, one or more times
+     *X{n}? 	X, exactly n times
+     *X{n,}? 	X, at least n times
+     *X{n,m}? 	X, at least n but not more than m times
+     * </ul>
+    *<ul>Possessive quantifiers
+     *X?+ 	X, once or not at all
+     *X*+ 	X, zero or more times
+     *X++ 	X, one or more times
+     *X{n}+ 	X, exactly n times
+     *X{n,}+ 	X, at least n times
+     *X{n,m}+ 	X, at least n but not more than m times
+     * </ul>
+     *<ul>Back references
+     *\n 	Whatever the nth capturing group matched
+     *\k<name> 	Whatever the named-capturing group "name" matched
+     * </ul>
+     *<ul>Quotation
+     *\ 	Nothing, but quotes the following character
+     *\Q 	Nothing, but quotes all characters until \E
+     *\E 	Nothing, but ends quoting started by \Q
+     * </ul>
+     *<ul>Special constructs (named-capturing and non-capturing)
+     *(?<name>X) 	X, as a named-capturing group
+     *(?:X) 	X, as a non-capturing group
+     *(?idmsuxU-idmsuxU)  	Nothing, but turns match flags i d m s u x U on - off
+     *(?idmsux-idmsux:X)   	X, as a non-capturing group with the given flags i d m s u x on - off
+     *(?=X) 	X, via zero-width positive lookahead
+     *(?!X) 	X, via zero-width negative lookahead
+     *(?<=X) 	X, via zero-width positive lookbehind
+     *(?<!X) 	X, via zero-width negative lookbehind
+     *(?>X) 	X, as an independent, non-capturing group
+     *</ul>
+    * [a-z] -> representa qualquer letra minúscula do alfabeto [A-Z] ->
      * representa qualquer letra maiúscula do alfabeto [a-zA-Z] -> representa
      * qualquer letra do alfabeto, seja maiúscula ou minúscula | -> representa o
      * 'ou'. "a|b" casa com 'a' ou com 'b', ou com os dois

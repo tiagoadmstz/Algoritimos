@@ -38,6 +38,20 @@ public class ControleInstancias {
         INSTANCIAS.remove(nome);
     }
 
+    public static void logout(JFrame loginFrame){
+        clear();
+        setControleInstancias(loginFrame.getClass().getName(), loginFrame);
+        loginFrame.setVisible(true);
+    }
+    
+    private static void clear(){        
+        INSTANCIAS.values().forEach(ob ->{
+            JFrame frame = (JFrame) ob;
+            frame.dispose();
+        });
+        INSTANCIAS.clear();
+    }
+    
     private static class WindowCloseListener extends WindowAdapter {
 
         public WindowCloseListener() {

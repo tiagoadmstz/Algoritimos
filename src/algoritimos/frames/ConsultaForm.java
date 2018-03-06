@@ -5,14 +5,19 @@ package algoritimos.frames;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
-
-
-import algoritimos.controle.ControleInstancias;
 import algoritimos.listener.ListenerCBI;
+import algoritimos.listener.ListenerCBIAdapter;
+import algoritimos.regex.REGEX;
+import algoritimos.regex.RegexUtil;
 import algoritimos.tabelas.TableModelCBI;
+import algoritimos.util.OPERACAO;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Frame;
-import java.util.List;
+import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.MouseEvent;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -21,79 +26,59 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.RowFilter;
+import javax.swing.event.CaretEvent;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableRowSorter;
 
 /**
  *
  * @author Tiago D. Teixeira
  */
-public class ConsultaForm extends javax.swing.JFrame {
+public final class ConsultaForm extends javax.swing.JFrame {
 
     /**
      * Creates new form PesquisaProdutoOSFrom
      */
     private final ConsultaListener listener;
-    public final static int PRODUTOS = 0;
-    public final static int ENTIDADES = 1;
-    public final static int SERVICOS = 2;
 
-    public ConsultaForm() {
-        this.setImageIcon();
+    /**
+     * Construtor que inicia todos os paramentros necessários para utilização do
+     * formulário de pesquisa padrão
+     *
+     * @param legenda Legenda do formulário de pesquisa
+     * @param model Modelo que será utilizado no formulário de pesquisa
+     * @param listenerSolicitante Listener que solicitou a pesquisa, caso for
+     * popular o form com a pesquisa
+     * @param modelSolicitante Model que solicitou a pesquisa, caso for inserir
+     * dados em outra tabela
+     * @param image Icone que será utilizado pela janela
+     * @param colunaPrincipal Coluna que será utilizada para os filtros por caracter inicial
+     * @param tamanho Array com o tamanho de cada coluna da pesquisa
+     */
+    public ConsultaForm(String legenda, TableModelCBI model, ListenerCBI listenerSolicitante, 
+            TableModelCBI modelSolicitante, ImageIcon image, int colunaPrincipal, int... tamanho) {
+        setImageIcon(image);
         initComponents();
         listener = new ConsultaListener(this);
+        this.setTitle(legenda);
+        listener.addModel(model);
+        listener.setModelSolicitante(modelSolicitante);
+        listener.setListenerSolicitante(listenerSolicitante);
+        listener.setColumnSize(tamanho);
+        listener.setColunaPrincipal(colunaPrincipal);
     }
 
-    public void setParametros(String legenda, String campoDescricao, int columnDescricao,
-            int tipoListaPesquisa, String nomeFormRequisicao, TableModelCBI model,
-            TableModelCBI modelSolicitante, List<?> lista) {
-        this.setLegenda(legenda);
-        this.setCampoDescricao(campoDescricao, columnDescricao);
-        this.setListaPesquisa(tipoListaPesquisa);
-        this.setNomeFormRequisicao(nomeFormRequisicao);
-        this.setTableModel(model, lista);
-        this.setTableModelSolicitante(modelSolicitante);
-    }
-
-    private void setImageIcon() {
-        //setIconImage(new ImageIcon(getClass().getResource("/br/com/cbi/images/iconeCBI.gif")).getImage());
+    private void setImageIcon(ImageIcon image) {
+        if (image != null) {
+            setIconImage(image.getImage());
+        }
     }
 
     @Override
     public void requestFocus() {
         super.requestFocus();
         this.setState(Frame.NORMAL);
-    }
-
-    public void setTableModel(TableModelCBI tableModel, List<?> lista) {
-        listener.addModel(tableModel, lista);
-    }
-
-    public void setTableModelSolicitante(TableModelCBI tableModelSolicitante) {
-        listener.setModelSolicitante(tableModelSolicitante);
-    }
-
-    public void setColumnSize(int... tamanho) {
-        listener.setColumnSize(tamanho);
-    }
-
-    public void setListenerSolicitante(ListenerCBI listenerSolicitante) {
-        listener.setListenerSolicitante(listenerSolicitante);
-    }
-
-    public void setLegenda(String legenda) {
-        this.setTitle(legenda);
-    }
-
-    public void setCampoDescricao(String campoDescricao, int column) {
-        listener.setCampoDescricao(campoDescricao, column);
-    }
-
-    public void setNomeFormRequisicao(String nomeForm) {
-        listener.setNomeFormRequisicao(nomeForm);
-    }
-
-    public void setListaPesquisa(int tipoLista) {
-        listener.setListaPesquisa(tipoLista);
-
     }
 
     public JPanel getPainelBotoes() {
@@ -206,14 +191,6 @@ public class ConsultaForm extends javax.swing.JFrame {
 
     public void setBtC(JButton btC) {
         this.btC = btC;
-    }
-
-    public JButton getBtCadastro() {
-        return btCadastro;
-    }
-
-    public void setBtCadastro(JButton btCadastro) {
-        this.btCadastro = btCadastro;
     }
 
     public JButton getBtD() {
@@ -482,7 +459,6 @@ public class ConsultaForm extends javax.swing.JFrame {
     private void initComponents() {
 
         painelCabecalho = new javax.swing.JPanel();
-        btCadastro = new javax.swing.JButton();
         painelPesquisa = new javax.swing.JPanel();
         cbPesquisa = new javax.swing.JComboBox();
         txtPesquisa = new javax.swing.JTextField();
@@ -536,37 +512,19 @@ public class ConsultaForm extends javax.swing.JFrame {
         setMinimumSize(new java.awt.Dimension(720, 453));
         setName("PesquisaProdutoOSForm"); // NOI18N
         setResizable(false);
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosed(java.awt.event.WindowEvent evt) {
-                formWindowClosed(evt);
-            }
-        });
 
         painelCabecalho.setBackground(new java.awt.Color(63, 63, 63));
         painelCabecalho.setPreferredSize(new java.awt.Dimension(800, 94));
-
-        btCadastro.setBackground(new java.awt.Color(243, 243, 243));
-        btCadastro.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
-        btCadastro.setForeground(new java.awt.Color(255, 194, 14));
-        btCadastro.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/cbi/images/pesquisaIcon.png"))); // NOI18N
-        btCadastro.setActionCommand("cadastro");
-        btCadastro.setBorder(null);
-        btCadastro.setBorderPainted(false);
-        btCadastro.setContentAreaFilled(false);
-        btCadastro.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
 
         javax.swing.GroupLayout painelCabecalhoLayout = new javax.swing.GroupLayout(painelCabecalho);
         painelCabecalho.setLayout(painelCabecalhoLayout);
         painelCabecalhoLayout.setHorizontalGroup(
             painelCabecalhoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(painelCabecalhoLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(btCadastro, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGap(0, 0, Short.MAX_VALUE)
         );
         painelCabecalhoLayout.setVerticalGroup(
             painelCabecalhoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(btCadastro, javax.swing.GroupLayout.DEFAULT_SIZE, 39, Short.MAX_VALUE)
+            .addGap(0, 39, Short.MAX_VALUE)
         );
 
         painelPesquisa.setPreferredSize(new java.awt.Dimension(800, 87));
@@ -890,7 +848,7 @@ public class ConsultaForm extends javax.swing.JFrame {
         painelBotoesLayout.setHorizontalGroup(
             painelBotoesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(painelBotoesLayout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(100, 100, 100)
                 .addGroup(painelBotoesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addGroup(painelBotoesLayout.createSequentialGroup()
                         .addGap(48, 48, 48)
@@ -967,7 +925,7 @@ public class ConsultaForm extends javax.swing.JFrame {
                 .addComponent(btJ, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(6, 6, 6)
                 .addComponent(btL, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addContainerGap(100, Short.MAX_VALUE))
         );
         painelBotoesLayout.setVerticalGroup(
             painelBotoesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1022,16 +980,16 @@ public class ConsultaForm extends javax.swing.JFrame {
         painelPesquisaLayout.setHorizontalGroup(
             painelPesquisaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(painelPesquisaLayout.createSequentialGroup()
-                .addGap(74, 74, 74)
-                .addGroup(painelPesquisaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(painelBotoes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .addGroup(painelPesquisaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(painelPesquisaLayout.createSequentialGroup()
-                        .addComponent(cbPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(txtPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(14, 14, 14)
-                        .addComponent(btPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(74, Short.MAX_VALUE))
+                        .addComponent(cbPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtPesquisa))
+                    .addComponent(painelBotoes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(45, 45, 45)
+                .addComponent(btPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         painelPesquisaLayout.setVerticalGroup(
             painelPesquisaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1042,7 +1000,7 @@ public class ConsultaForm extends javax.swing.JFrame {
                         .addComponent(cbPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(txtPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(btPesquisa))
-                .addGap(10, 10, 10)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(painelBotoes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -1076,12 +1034,14 @@ public class ConsultaForm extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(painelCabecalho, javax.swing.GroupLayout.DEFAULT_SIZE, 720, Short.MAX_VALUE)
+            .addComponent(painelCabecalho, javax.swing.GroupLayout.DEFAULT_SIZE, 719, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(scPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 698, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 12, Short.MAX_VALUE))
-            .addComponent(painelPesquisa, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 720, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(painelPesquisa, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(scPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 698, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1098,52 +1058,6 @@ public class ConsultaForm extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
-        ControleInstancias.removeInstance(ConsultaForm.class.getName());
-    }//GEN-LAST:event_formWindowClosed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ConsultaForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ConsultaForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ConsultaForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ConsultaForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new ConsultaForm().setVisible(true);
-            }
-        });
-    }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bt0;
     private javax.swing.JButton bt1;
@@ -1158,7 +1072,6 @@ public class ConsultaForm extends javax.swing.JFrame {
     private javax.swing.JButton btA;
     private javax.swing.JButton btB;
     private javax.swing.JButton btC;
-    private javax.swing.JButton btCadastro;
     private javax.swing.JButton btD;
     private javax.swing.JButton btE;
     private javax.swing.JButton btF;
@@ -1195,4 +1108,166 @@ public class ConsultaForm extends javax.swing.JFrame {
     private javax.swing.JTable tbPesquisa;
     private javax.swing.JTextField txtPesquisa;
     // End of variables declaration//GEN-END:variables
+public final class ConsultaListener extends ListenerCBIAdapter {
+
+        private final ConsultaForm form;
+        private TableModelCBI model = null;
+        private TableModelCBI modelSolicitante = null;
+        private ListenerCBI listenerSolicitante = null;
+        private final PesquisaRenderer renderer;
+        private TableRowSorter sorter;
+        private int colunaPrincipal = -1;
+
+        public ConsultaListener(ConsultaForm form) {
+            this.form = form;
+            renderer = new PesquisaRenderer();
+            attachListener();
+            form.getTxtPesquisa().requestFocus();
+        }
+
+        /**
+         * Adiciona o tablemodel do formulário solicitante para fazer as adições
+         * da lista
+         *
+         * @param modelSolicitante modelo da tabela solicitante
+         */
+        public void setModelSolicitante(TableModelCBI modelSolicitante) {
+            this.modelSolicitante = modelSolicitante;
+        }
+
+        /**
+         * Adiciona um listener do formulário solicitante para fazer adições de
+         * objetos
+         *
+         * @param listenerSolicitante listener do formulário solicitante
+         */
+        public void setListenerSolicitante(ListenerCBI listenerSolicitante) {
+            this.listenerSolicitante = listenerSolicitante;
+        }
+
+        /**
+         * Campo utilizado para realizar a pesquisa de texto dinamico e ser
+         * utilizado para fazer o link de dados ao receber um duplo clique
+         *
+         * @param column número da coluna onde fica o campo de descrição
+         */
+        public void setColunaPrincipal(int column) {
+            renderer.setColumnLink(column);
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            switch (e.getActionCommand()) {
+                case "fechar":
+                    fechar(form);
+                    break;
+                case "letra":
+                    JButton bt = (JButton) e.getSource();
+                    if (!"...".equals(bt.getText()) && colunaPrincipal != -1) {
+                        sorter.setRowFilter(RowFilter.regexFilter(RegexUtil.getRegex(REGEX.COMECACOM, bt.getText()), colunaPrincipal));
+                    } else if ("...".equals(bt.getText())) {
+                        sorter.setRowFilter(null);
+                    }
+                    form.getTxtPesquisa().requestFocus();
+            }
+        }
+
+        @Override
+        public void attachListener() {
+            for (Component bt : form.getPainelBotoes().getComponents()) {
+                JButton b = (JButton) bt;
+                b.addActionListener(this);
+                b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            }
+            form.getBtPesquisa().addActionListener(this);
+            form.getCbPesquisa().addItemListener(this);
+            form.getTbPesquisa().addMouseListener(this);
+            form.getTxtPesquisa().addKeyListener(this);
+            form.getItemFechar().addActionListener(this);
+            fecharESC(form.getItemFechar());
+        }
+
+        public void setColumnSize(int... tamanho) {
+            if (tamanho != null && tamanho.length > 0) {
+                this.setColumnSize(form.getTbPesquisa(), tamanho);
+            }
+        }
+
+        public void addModel(TableModelCBI model) {
+            this.model = model;
+            form.getTbPesquisa().setModel(model);
+            sorter = new TableRowSorter(model);
+            setColumnFilter(tbPesquisa, sorter);
+            form.getTbPesquisa().setRowSorter(sorter);
+            for (int i = 0; i < model.getColumnCount(); i++) {
+                form.getCbPesquisa().addItem(model.getColumnName(i));
+            }
+            setColumnDesign(tbPesquisa, renderer);
+        }
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if (e.getClickCount() == 2) {
+                if (listenerSolicitante != null) {
+                    listenerSolicitante.setDados(model.getObject(sorter.convertRowIndexToModel(form.getTbPesquisa().getSelectedRow())));
+                    listenerSolicitante.getDados();
+                    listenerSolicitante.setEnableButtons(OPERACAO.SALVAR);
+                }
+
+                if (modelSolicitante != null) {
+                    modelSolicitante.addObject(model.getObject(sorter.convertRowIndexToModel(form.getTbPesquisa().getSelectedRow())));
+                }
+            }
+            form.getTxtPesquisa().requestFocus();
+        }
+
+        @Override
+        public void caretUpdate(CaretEvent e) {
+            sorter.setRowFilter(RowFilter.regexFilter(RegexUtil.getRegex(REGEX.CONTEM, form.getTxtPesquisa().getText()), form.getCbPesquisa().getSelectedIndex()));
+        }
+
+        @Override
+        public void itemStateChanged(ItemEvent e) {
+            if (e.getStateChange() == ItemEvent.SELECTED || e.getStateChange() == ItemEvent.DESELECTED) {
+                form.getTxtPesquisa().requestFocus();
+            }
+        }
+
+        private class PesquisaRenderer extends DefaultTableCellRenderer {
+
+            private final Color gray = new Color(225, 225, 225);
+            private final Color white = new Color(255, 255, 255);
+            private int column = 0;
+
+            public void setColumnLink(int column) {
+                this.column = column;
+            }
+
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+
+                Component renderer = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+                if (isSelected) {
+                    renderer.setBackground(Color.blue);
+                    renderer.setForeground(white);
+                } else if (row % 2 != 0 && column != this.column) {
+                    renderer.setForeground(Color.black);
+                    renderer.setBackground(gray);
+                } else if (row % 2 == 0 && column != this.column) {
+                    renderer.setForeground(Color.black);
+                    renderer.setBackground(white);
+                } else if (row % 2 != 0 && column == this.column) {
+                    renderer.setForeground(Color.blue);
+                    renderer.setBackground(gray);
+                } else if (row % 2 == 0 && column == this.column) {
+                    renderer.setForeground(Color.blue);
+                    renderer.setBackground(white);
+                }
+
+                return renderer;
+            }
+
+        }
+    }
 }
