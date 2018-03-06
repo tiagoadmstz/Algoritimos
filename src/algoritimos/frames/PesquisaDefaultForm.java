@@ -139,6 +139,7 @@ public final class PesquisaDefaultForm extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        tbPesquisa.setAutoscrolls(false);
         scPesquisa.setViewportView(tbPesquisa);
 
         javax.swing.GroupLayout painelMainLayout = new javax.swing.GroupLayout(painelMain);
@@ -231,7 +232,7 @@ public final class PesquisaDefaultForm extends javax.swing.JFrame {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            switch(e.getActionCommand()){
+            switch (e.getActionCommand()) {
                 case "fechar":
                     fechar(form);
                     break;
@@ -249,9 +250,10 @@ public final class PesquisaDefaultForm extends javax.swing.JFrame {
             }
             setColumnDesign(tbPesquisa, renderer);
         }
-        
+
         public void setColumnSize(int... tamanho) {
-            if(tamanho != null && tamanho.length > 0){
+            if (tamanho != null && tamanho.length > 0) {
+                tbPesquisa.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
                 this.setColumnSize(form.getTbPesquisa(), tamanho);
             }
         }
@@ -291,16 +293,18 @@ public final class PesquisaDefaultForm extends javax.swing.JFrame {
         public void mouseClicked(MouseEvent e) {
             if (e.getClickCount() == 2) {
                 if (listenerSolicitante != null) {
-                    listenerSolicitante.setDados(model.getObject(form.getTbPesquisa().getSelectedRow()));
+                    listenerSolicitante.setDados(model.getObject(sorter.convertRowIndexToModel(form.getTbPesquisa().getSelectedRow())));
                     listenerSolicitante.getDados();
                     listenerSolicitante.setEnableButtons(OPERACAO.SALVAR);
                     form.dispose();
                 }
 
                 if (modelSolicitante != null) {
-                    modelSolicitante.addObject(model.getObject(form.getTbPesquisa().getSelectedRow()));
+                    modelSolicitante.addObject(model.getObject(sorter.convertRowIndexToModel(form.getTbPesquisa().getSelectedRow())));
                     form.dispose();
                 }
+            } else if (e.getClickCount() == 1) {
+                form.getCbPesqusia().setSelectedIndex(form.getTbPesquisa().getSelectedColumn());
             }
         }
 
@@ -311,7 +315,7 @@ public final class PesquisaDefaultForm extends javax.swing.JFrame {
 
         @Override
         public void itemStateChanged(ItemEvent e) {
-            if(e.getStateChange() == ItemEvent.SELECTED || e.getStateChange() == ItemEvent.DESELECTED){
+            if (e.getStateChange() == ItemEvent.SELECTED || e.getStateChange() == ItemEvent.DESELECTED) {
                 form.getTxtPesquisa().requestFocus();
             }
         }
