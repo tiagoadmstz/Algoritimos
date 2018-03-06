@@ -5,15 +5,22 @@ package algoritimos.frames;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
-
-
 import algoritimos.controle.ControleInstancias;
 import algoritimos.listener.ListenerCBI;
+import algoritimos.listener.ListenerCBIAdapter;
+import algoritimos.regex.REGEX;
+import algoritimos.regex.RegexUtil;
 import algoritimos.tabelas.TableModelCBI;
+import algoritimos.util.OPERACAO;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
 import java.util.List;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JMenuItem;
@@ -21,6 +28,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.RowFilter;
+import javax.swing.event.CaretEvent;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableRowSorter;
 
 /**
  *
@@ -32,25 +43,27 @@ public class ConsultaForm extends javax.swing.JFrame {
      * Creates new form PesquisaProdutoOSFrom
      */
     private final ConsultaListener listener;
-    public final static int PRODUTOS = 0;
-    public final static int ENTIDADES = 1;
-    public final static int SERVICOS = 2;
 
-    public ConsultaForm() {
-        this.setImageIcon();
+    /**
+     * Construtor que inicia todos os paramentros necessários para utilização do
+     * formulário de pesquisa padrão
+     *
+     * @param legenda Legenda do formulário de pesquisa
+     * @param model Modelo que será utilizado no formulário de pesquisa
+     * @param listenerSolicitante Listener que solicitou a pesquisa, caso for
+     * popular o form com a pesquisa
+     * @param modelSolicitante Model que solicitou a pesquisa, caso for inserir
+     * dados em outra tabela
+     * @param tamanho Array com o tamanho de cada coluna da pesquisa
+     */
+    public ConsultaForm(String legenda, TableModelCBI model, ListenerCBI listenerSolicitante, TableModelCBI modelSolicitante, int... tamanho) {
         initComponents();
         listener = new ConsultaListener(this);
-    }
-
-    public void setParametros(String legenda, String campoDescricao, int columnDescricao,
-            int tipoListaPesquisa, String nomeFormRequisicao, TableModelCBI model,
-            TableModelCBI modelSolicitante, List<?> lista) {
         this.setLegenda(legenda);
-        this.setCampoDescricao(campoDescricao, columnDescricao);
-        this.setListaPesquisa(tipoListaPesquisa);
-        this.setNomeFormRequisicao(nomeFormRequisicao);
-        this.setTableModel(model, lista);
+        this.setTableModel(model);
         this.setTableModelSolicitante(modelSolicitante);
+        this.setListenerSolicitante(listenerSolicitante);
+        this.setColumnSize(tamanho);
     }
 
     private void setImageIcon() {
@@ -63,23 +76,23 @@ public class ConsultaForm extends javax.swing.JFrame {
         this.setState(Frame.NORMAL);
     }
 
-    public void setTableModel(TableModelCBI tableModel, List<?> lista) {
-        listener.addModel(tableModel, lista);
+    private void setTableModel(TableModelCBI tableModel) {
+        listener.addModel(tableModel);
     }
 
-    public void setTableModelSolicitante(TableModelCBI tableModelSolicitante) {
+    private void setTableModelSolicitante(TableModelCBI tableModelSolicitante) {
         listener.setModelSolicitante(tableModelSolicitante);
     }
 
-    public void setColumnSize(int... tamanho) {
+    private void setColumnSize(int... tamanho) {
         listener.setColumnSize(tamanho);
     }
 
-    public void setListenerSolicitante(ListenerCBI listenerSolicitante) {
+    private void setListenerSolicitante(ListenerCBI listenerSolicitante) {
         listener.setListenerSolicitante(listenerSolicitante);
     }
 
-    public void setLegenda(String legenda) {
+    private void setLegenda(String legenda) {
         this.setTitle(legenda);
     }
 
@@ -536,11 +549,6 @@ public class ConsultaForm extends javax.swing.JFrame {
         setMinimumSize(new java.awt.Dimension(720, 453));
         setName("PesquisaProdutoOSForm"); // NOI18N
         setResizable(false);
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosed(java.awt.event.WindowEvent evt) {
-                formWindowClosed(evt);
-            }
-        });
 
         painelCabecalho.setBackground(new java.awt.Color(63, 63, 63));
         painelCabecalho.setPreferredSize(new java.awt.Dimension(800, 94));
@@ -1098,52 +1106,6 @@ public class ConsultaForm extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
-        ControleInstancias.removeInstance(ConsultaForm.class.getName());
-    }//GEN-LAST:event_formWindowClosed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ConsultaForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ConsultaForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ConsultaForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ConsultaForm.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new ConsultaForm().setVisible(true);
-            }
-        });
-    }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bt0;
     private javax.swing.JButton bt1;
@@ -1195,4 +1157,189 @@ public class ConsultaForm extends javax.swing.JFrame {
     private javax.swing.JTable tbPesquisa;
     private javax.swing.JTextField txtPesquisa;
     // End of variables declaration//GEN-END:variables
+public final class ConsultaListener extends ListenerCBIAdapter {
+
+        private final ConsultaForm form;
+        private TableModelCBI model = null;
+        private TableModelCBI modelSolicitante = null;
+        private ListenerCBI listenerSolicitante = null;
+        private final PesquisaRenderer renderer;
+        private String nomeFormRequisicao;
+        private String campoDescricao;
+        private TableRowSorter sorter;
+
+        public ConsultaListener(ConsultaForm form) {
+            this.form = form;
+            renderer = new PesquisaRenderer();
+            attachListener();
+            form.getTxtPesquisa().requestFocus();
+        }
+
+        /**
+         * Adiciona a identificação por nome do formulário que requisitou o
+         * formulário de pesquisa.
+         *
+         * @param nomeForm nome do formulário que requisitou a pesquisa.
+         */
+        public void setNomeFormRequisicao(String nomeForm) {
+            this.nomeFormRequisicao = nomeForm;
+        }
+
+        /**
+         * Adiciona o tablemodel do formulário solicitante para fazer as adições
+         * da lista
+         *
+         * @param modelSolicitante modelo da tabela solicitante
+         */
+        public void setModelSolicitante(TableModelCBI modelSolicitante) {
+            this.modelSolicitante = modelSolicitante;
+        }
+
+        /**
+         * Adiciona um listener do formulário solicitante para fazer adições de
+         * objetos
+         *
+         * @param listenerSolicitante listener do formulário solicitante
+         */
+        public void setListenerSolicitante(ListenerCBI listenerSolicitante) {
+            this.listenerSolicitante = listenerSolicitante;
+        }
+
+        /**
+         * Campo utilizado para realizar a pesquisa de texto dinamico e ser
+         * utilizado para fazer o link de dados ao receber um duplo clique
+         *
+         * @param campoDescricao nome do campo de descrição da tabela
+         * @param column número da coluna onde fica o campo de descrição
+         */
+        public void setCampoDescricao(String campoDescricao, int column) {
+            this.campoDescricao = campoDescricao;
+            renderer.setColumnLink(column);
+        }
+
+        /**
+         * Inseri a lista de campos que podem ser pesquisados neste formulário.
+         *
+         * @param tipoLista <br> 0 - lista para pesquisa de produtos;
+         * <br> 1 - lista para pesquisa de clientes.
+         */
+        public void setListaPesquisa(int tipoLista) {
+
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            switch (e.getActionCommand()) {
+                case "fechar":
+                    fechar(form);
+                    break;
+                case "letra":
+                    JButton bt = (JButton) e.getSource();
+                    if (!"...".equals(bt.getText())) {
+                        sorter.setRowFilter(RowFilter.regexFilter(RegexUtil.getRegex(REGEX.COMECACOM, bt.getText()), form.getCbPesquisa().getSelectedIndex()));
+                    } else if ("...".equals(bt.getText())) {
+                        model.resetarLista();
+                    }
+                    form.getTxtPesquisa().requestFocus();
+            }
+        }
+
+        @Override
+        public void attachListener() {
+            for (Component bt : form.getPainelBotoes().getComponents()) {
+                JButton b = (JButton) bt;
+                b.addActionListener(this);
+            }
+            form.getBtCadastro().addActionListener(this);
+            form.getBtPesquisa().addActionListener(this);
+            form.getCbPesquisa().addItemListener(this);
+            form.getTbPesquisa().addMouseListener(this);
+            form.getTxtPesquisa().addKeyListener(this);
+            form.getItemFechar().addActionListener(this);
+            fecharESC(form.getItemFechar());
+        }
+
+        public void setColumnSize(int... tamanho) {
+            if (tamanho != null && tamanho.length > 0) {
+                this.setColumnSize(form.getTbPesquisa(), tamanho);
+            }
+        }
+
+        public void addModel(TableModelCBI model) {
+            this.model = model;
+            form.getTbPesquisa().setModel(model);
+            sorter = new TableRowSorter(model);
+            setColumnFilter(tbPesquisa, sorter);
+            form.getTbPesquisa().setRowSorter(sorter);
+            for (int i = 0; i < model.getColumnCount(); i++) {
+                form.getCbPesquisa().addItem(model.getColumnName(i));
+            }
+            setColumnDesign(tbPesquisa, renderer);
+        }
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if (e.getClickCount() == 2) {
+                if (listenerSolicitante != null) {
+                    listenerSolicitante.setDados(model.getObject(sorter.convertRowIndexToModel(form.getTbPesquisa().getSelectedRow())));
+                    listenerSolicitante.getDados();
+                    listenerSolicitante.setEnableButtons(OPERACAO.SALVAR);
+                }
+
+                if (modelSolicitante != null) {
+                    modelSolicitante.addObject(model.getObject(sorter.convertRowIndexToModel(form.getTbPesquisa().getSelectedRow())));
+                }
+            }
+            form.getTxtPesquisa().requestFocus();
+        }
+
+        @Override
+        public void caretUpdate(CaretEvent e) {
+            sorter.setRowFilter(RowFilter.regexFilter(RegexUtil.getRegex(REGEX.CONTEM, form.getTxtPesquisa().getText()), form.getCbPesquisa().getSelectedIndex()));
+        }
+
+        @Override
+        public void itemStateChanged(ItemEvent e) {
+            if (e.getStateChange() == ItemEvent.SELECTED || e.getStateChange() == ItemEvent.DESELECTED) {
+                form.getTxtPesquisa().requestFocus();
+            }
+        }
+
+        private class PesquisaRenderer extends DefaultTableCellRenderer {
+
+            private final Color gray = new Color(225, 225, 225);
+            private final Color white = new Color(255, 255, 255);
+            private int column = 0;
+
+            public void setColumnLink(int column) {
+                this.column = column;
+            }
+
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+
+                Component renderer = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+                if (isSelected) {
+                    renderer.setBackground(Color.blue);
+                    renderer.setForeground(white);
+                } else if (row % 2 != 0 && column != this.column) {
+                    renderer.setForeground(Color.black);
+                    renderer.setBackground(gray);
+                } else if (row % 2 == 0 && column != this.column) {
+                    renderer.setForeground(Color.black);
+                    renderer.setBackground(white);
+                } else if (row % 2 != 0 && column == this.column) {
+                    renderer.setForeground(Color.blue);
+                    renderer.setBackground(gray);
+                } else if (row % 2 == 0 && column == this.column) {
+                    renderer.setForeground(Color.blue);
+                    renderer.setBackground(white);
+                }
+
+                return renderer;
+            }
+
+        }
+    }
 }

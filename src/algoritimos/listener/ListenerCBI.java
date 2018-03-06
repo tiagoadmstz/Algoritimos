@@ -397,13 +397,14 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
     public abstract void pesquisar();
 
     public ConsultaForm pesquisar(ListenerCBI listenerSolicitante) {
-        ConsultaForm consulta = (ConsultaForm) ControleInstancias.getInstance(ConsultaForm.class.getName());
+        /*ConsultaForm consulta = (ConsultaForm) ControleInstancias.getInstance(ConsultaForm.class.getName());
         if (consulta == null) {
-            consulta = new ConsultaForm();
-            ControleInstancias.setControleInstancias(ConsultaForm.class.getName(), consulta);
+        consulta = new ConsultaForm();
+        ControleInstancias.setControleInstancias(ConsultaForm.class.getName(), consulta);
         }
         consulta.setListenerSolicitante(listenerSolicitante);
-        return consulta;
+        return consulta;*/
+        return null;
     }
 
     /**
