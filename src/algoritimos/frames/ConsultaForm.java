@@ -5,7 +5,6 @@ package algoritimos.frames;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-import algoritimos.controle.ControleInstancias;
 import algoritimos.listener.ListenerCBI;
 import algoritimos.listener.ListenerCBIAdapter;
 import algoritimos.regex.REGEX;
@@ -14,13 +13,12 @@ import algoritimos.tabelas.TableModelCBI;
 import algoritimos.util.OPERACAO;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.awt.event.WindowEvent;
-import java.util.List;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JMenuItem;
@@ -37,7 +35,7 @@ import javax.swing.table.TableRowSorter;
  *
  * @author Tiago D. Teixeira
  */
-public class ConsultaForm extends javax.swing.JFrame {
+public final class ConsultaForm extends javax.swing.JFrame {
 
     /**
      * Creates new form PesquisaProdutoOSFrom
@@ -54,59 +52,33 @@ public class ConsultaForm extends javax.swing.JFrame {
      * popular o form com a pesquisa
      * @param modelSolicitante Model que solicitou a pesquisa, caso for inserir
      * dados em outra tabela
+     * @param image Icone que será utilizado pela janela
+     * @param colunaPrincipal Coluna que será utilizada para os filtros por caracter inicial
      * @param tamanho Array com o tamanho de cada coluna da pesquisa
      */
-    public ConsultaForm(String legenda, TableModelCBI model, ListenerCBI listenerSolicitante, TableModelCBI modelSolicitante, int... tamanho) {
+    public ConsultaForm(String legenda, TableModelCBI model, ListenerCBI listenerSolicitante, 
+            TableModelCBI modelSolicitante, ImageIcon image, int colunaPrincipal, int... tamanho) {
+        setImageIcon(image);
         initComponents();
         listener = new ConsultaListener(this);
-        this.setLegenda(legenda);
-        this.setTableModel(model);
-        this.setTableModelSolicitante(modelSolicitante);
-        this.setListenerSolicitante(listenerSolicitante);
-        this.setColumnSize(tamanho);
+        this.setTitle(legenda);
+        listener.addModel(model);
+        listener.setModelSolicitante(modelSolicitante);
+        listener.setListenerSolicitante(listenerSolicitante);
+        listener.setColumnSize(tamanho);
+        listener.setColunaPrincipal(colunaPrincipal);
     }
 
-    private void setImageIcon() {
-        //setIconImage(new ImageIcon(getClass().getResource("/br/com/cbi/images/iconeCBI.gif")).getImage());
+    private void setImageIcon(ImageIcon image) {
+        if (image != null) {
+            setIconImage(image.getImage());
+        }
     }
 
     @Override
     public void requestFocus() {
         super.requestFocus();
         this.setState(Frame.NORMAL);
-    }
-
-    private void setTableModel(TableModelCBI tableModel) {
-        listener.addModel(tableModel);
-    }
-
-    private void setTableModelSolicitante(TableModelCBI tableModelSolicitante) {
-        listener.setModelSolicitante(tableModelSolicitante);
-    }
-
-    private void setColumnSize(int... tamanho) {
-        listener.setColumnSize(tamanho);
-    }
-
-    private void setListenerSolicitante(ListenerCBI listenerSolicitante) {
-        listener.setListenerSolicitante(listenerSolicitante);
-    }
-
-    private void setLegenda(String legenda) {
-        this.setTitle(legenda);
-    }
-
-    public void setCampoDescricao(String campoDescricao, int column) {
-        listener.setCampoDescricao(campoDescricao, column);
-    }
-
-    public void setNomeFormRequisicao(String nomeForm) {
-        listener.setNomeFormRequisicao(nomeForm);
-    }
-
-    public void setListaPesquisa(int tipoLista) {
-        listener.setListaPesquisa(tipoLista);
-
     }
 
     public JPanel getPainelBotoes() {
@@ -219,14 +191,6 @@ public class ConsultaForm extends javax.swing.JFrame {
 
     public void setBtC(JButton btC) {
         this.btC = btC;
-    }
-
-    public JButton getBtCadastro() {
-        return btCadastro;
-    }
-
-    public void setBtCadastro(JButton btCadastro) {
-        this.btCadastro = btCadastro;
     }
 
     public JButton getBtD() {
@@ -495,7 +459,6 @@ public class ConsultaForm extends javax.swing.JFrame {
     private void initComponents() {
 
         painelCabecalho = new javax.swing.JPanel();
-        btCadastro = new javax.swing.JButton();
         painelPesquisa = new javax.swing.JPanel();
         cbPesquisa = new javax.swing.JComboBox();
         txtPesquisa = new javax.swing.JTextField();
@@ -553,28 +516,15 @@ public class ConsultaForm extends javax.swing.JFrame {
         painelCabecalho.setBackground(new java.awt.Color(63, 63, 63));
         painelCabecalho.setPreferredSize(new java.awt.Dimension(800, 94));
 
-        btCadastro.setBackground(new java.awt.Color(243, 243, 243));
-        btCadastro.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
-        btCadastro.setForeground(new java.awt.Color(255, 194, 14));
-        btCadastro.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/cbi/images/pesquisaIcon.png"))); // NOI18N
-        btCadastro.setActionCommand("cadastro");
-        btCadastro.setBorder(null);
-        btCadastro.setBorderPainted(false);
-        btCadastro.setContentAreaFilled(false);
-        btCadastro.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-
         javax.swing.GroupLayout painelCabecalhoLayout = new javax.swing.GroupLayout(painelCabecalho);
         painelCabecalho.setLayout(painelCabecalhoLayout);
         painelCabecalhoLayout.setHorizontalGroup(
             painelCabecalhoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(painelCabecalhoLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(btCadastro, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGap(0, 0, Short.MAX_VALUE)
         );
         painelCabecalhoLayout.setVerticalGroup(
             painelCabecalhoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(btCadastro, javax.swing.GroupLayout.DEFAULT_SIZE, 39, Short.MAX_VALUE)
+            .addGap(0, 39, Short.MAX_VALUE)
         );
 
         painelPesquisa.setPreferredSize(new java.awt.Dimension(800, 87));
@@ -898,7 +848,7 @@ public class ConsultaForm extends javax.swing.JFrame {
         painelBotoesLayout.setHorizontalGroup(
             painelBotoesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(painelBotoesLayout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(100, 100, 100)
                 .addGroup(painelBotoesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addGroup(painelBotoesLayout.createSequentialGroup()
                         .addGap(48, 48, 48)
@@ -975,7 +925,7 @@ public class ConsultaForm extends javax.swing.JFrame {
                 .addComponent(btJ, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(6, 6, 6)
                 .addComponent(btL, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addContainerGap(100, Short.MAX_VALUE))
         );
         painelBotoesLayout.setVerticalGroup(
             painelBotoesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1030,16 +980,16 @@ public class ConsultaForm extends javax.swing.JFrame {
         painelPesquisaLayout.setHorizontalGroup(
             painelPesquisaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(painelPesquisaLayout.createSequentialGroup()
-                .addGap(74, 74, 74)
-                .addGroup(painelPesquisaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(painelBotoes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap()
+                .addGroup(painelPesquisaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(painelPesquisaLayout.createSequentialGroup()
-                        .addComponent(cbPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(txtPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(14, 14, 14)
-                        .addComponent(btPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(74, Short.MAX_VALUE))
+                        .addComponent(cbPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtPesquisa))
+                    .addComponent(painelBotoes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(45, 45, 45)
+                .addComponent(btPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         painelPesquisaLayout.setVerticalGroup(
             painelPesquisaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1050,7 +1000,7 @@ public class ConsultaForm extends javax.swing.JFrame {
                         .addComponent(cbPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(txtPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(btPesquisa))
-                .addGap(10, 10, 10)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(painelBotoes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -1084,12 +1034,14 @@ public class ConsultaForm extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(painelCabecalho, javax.swing.GroupLayout.DEFAULT_SIZE, 720, Short.MAX_VALUE)
+            .addComponent(painelCabecalho, javax.swing.GroupLayout.DEFAULT_SIZE, 719, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(scPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 698, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 12, Short.MAX_VALUE))
-            .addComponent(painelPesquisa, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 720, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(painelPesquisa, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(scPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 698, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1120,7 +1072,6 @@ public class ConsultaForm extends javax.swing.JFrame {
     private javax.swing.JButton btA;
     private javax.swing.JButton btB;
     private javax.swing.JButton btC;
-    private javax.swing.JButton btCadastro;
     private javax.swing.JButton btD;
     private javax.swing.JButton btE;
     private javax.swing.JButton btF;
@@ -1164,25 +1115,14 @@ public final class ConsultaListener extends ListenerCBIAdapter {
         private TableModelCBI modelSolicitante = null;
         private ListenerCBI listenerSolicitante = null;
         private final PesquisaRenderer renderer;
-        private String nomeFormRequisicao;
-        private String campoDescricao;
         private TableRowSorter sorter;
+        private int colunaPrincipal = -1;
 
         public ConsultaListener(ConsultaForm form) {
             this.form = form;
             renderer = new PesquisaRenderer();
             attachListener();
             form.getTxtPesquisa().requestFocus();
-        }
-
-        /**
-         * Adiciona a identificação por nome do formulário que requisitou o
-         * formulário de pesquisa.
-         *
-         * @param nomeForm nome do formulário que requisitou a pesquisa.
-         */
-        public void setNomeFormRequisicao(String nomeForm) {
-            this.nomeFormRequisicao = nomeForm;
         }
 
         /**
@@ -1209,22 +1149,10 @@ public final class ConsultaListener extends ListenerCBIAdapter {
          * Campo utilizado para realizar a pesquisa de texto dinamico e ser
          * utilizado para fazer o link de dados ao receber um duplo clique
          *
-         * @param campoDescricao nome do campo de descrição da tabela
          * @param column número da coluna onde fica o campo de descrição
          */
-        public void setCampoDescricao(String campoDescricao, int column) {
-            this.campoDescricao = campoDescricao;
+        public void setColunaPrincipal(int column) {
             renderer.setColumnLink(column);
-        }
-
-        /**
-         * Inseri a lista de campos que podem ser pesquisados neste formulário.
-         *
-         * @param tipoLista <br> 0 - lista para pesquisa de produtos;
-         * <br> 1 - lista para pesquisa de clientes.
-         */
-        public void setListaPesquisa(int tipoLista) {
-
         }
 
         @Override
@@ -1235,10 +1163,10 @@ public final class ConsultaListener extends ListenerCBIAdapter {
                     break;
                 case "letra":
                     JButton bt = (JButton) e.getSource();
-                    if (!"...".equals(bt.getText())) {
-                        sorter.setRowFilter(RowFilter.regexFilter(RegexUtil.getRegex(REGEX.COMECACOM, bt.getText()), form.getCbPesquisa().getSelectedIndex()));
+                    if (!"...".equals(bt.getText()) && colunaPrincipal != -1) {
+                        sorter.setRowFilter(RowFilter.regexFilter(RegexUtil.getRegex(REGEX.COMECACOM, bt.getText()), colunaPrincipal));
                     } else if ("...".equals(bt.getText())) {
-                        model.resetarLista();
+                        sorter.setRowFilter(null);
                     }
                     form.getTxtPesquisa().requestFocus();
             }
@@ -1249,8 +1177,8 @@ public final class ConsultaListener extends ListenerCBIAdapter {
             for (Component bt : form.getPainelBotoes().getComponents()) {
                 JButton b = (JButton) bt;
                 b.addActionListener(this);
+                b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
             }
-            form.getBtCadastro().addActionListener(this);
             form.getBtPesquisa().addActionListener(this);
             form.getCbPesquisa().addItemListener(this);
             form.getTbPesquisa().addMouseListener(this);

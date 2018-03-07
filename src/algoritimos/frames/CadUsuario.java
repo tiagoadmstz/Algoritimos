@@ -5,6 +5,10 @@
  */
 package algoritimos.frames;
 
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
+
 /**
  *
  * @author tiago.teixeira
@@ -111,4 +115,6 @@ public class CadUsuario extends javax.swing.JFrame {
     private javax.swing.JTree jTree1;
     private algoritimos.paineis.PainelUsuarioDefault painelUsuarioDefault1;
     // End of variables declaration//GEN-END:variables
+
+    
 }
