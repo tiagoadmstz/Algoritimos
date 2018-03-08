@@ -16,11 +16,8 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface SETTER {
+public @interface TargetParent {
     
-    String nome() default "";
-    String metodoGet();
-    Class tipoGet();
-    Class classeReferencia();
-    
+    Class parent();
+            
 }

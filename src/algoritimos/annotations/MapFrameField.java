@@ -11,16 +11,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 
+ *
  * @author tiago.teixeira
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface GETTER {
+public @interface MapFrameField {
     
-    String nome() default "";
-    String metodoSet();
-    Class tipoSet();
-    Class classeReferencia();
+    String referenceField();
+    Class typeReference();
+    Class subClassReference() default Object.class;
     
 }
