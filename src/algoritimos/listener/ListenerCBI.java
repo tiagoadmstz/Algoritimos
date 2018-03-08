@@ -35,6 +35,7 @@ import java.awt.event.WindowListener;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultCellEditor;
@@ -214,11 +215,19 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
      */
     public void setDados(JFrame form, Object ob) {
         for (Method mt : form.getClass().getMethods()) { //pega todos os metodos do formulário
-            if (mt.isAnnotationPresent(MapFrameField.class)) { //verifica se são do tipo GETTER
+            if (mt.isAnnotationPresent(MapFrameField.class)) { //verifica se são do tipo MapFrameFields
                 MapFrameField map = mt.getAnnotation(MapFrameField.class); //recupera referencia da anotação
                 try {
+                    Method setMethod;
+
                     //pega o método get do objeto de referencia
-                    Method setMethod = ob.getClass().getMethod("set".concat(map.referenceField()), map.typeReference());
+                    if (!Objects.equals("null", map.subClassReference())) {
+                        //Method getMethod = ob.getClass().getMethod("get".concat(map.subClassReference()));
+                        setMethod = ob.getClass().getMethod("get".concat(map.subClassReference()))
+                                .getClass().getMethod("set".concat(map.referenceField()), map.typeReference());
+                    } else {
+                        setMethod = ob.getClass().getMethod("set".concat(map.referenceField()), map.typeReference());
+                    }
 
                     //verifica o tipo de retorno do getter
                     if (mt.getReturnType() == JTextFieldCBI.class | mt.getReturnType() == JTextField.class) {
@@ -260,8 +269,15 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
             if (mt.isAnnotationPresent(MapFrameField.class)) { //verifica se são do tipo SETTER
                 MapFrameField map = mt.getAnnotation(MapFrameField.class); //recupera referencia da anotação
                 try {
+                    Method getMethod;
+                    
                     //pega o método get do objeto de referencia
-                    Method getMethod = ob.getClass().getMethod("get".concat(map.referenceField()));
+                    if (Objects.equals("null", map.subClassReference())) {
+                        getMethod = ob.getClass().getMethod("get".concat(map.subClassReference()))
+                                .getClass().getMethod("get".concat(map.referenceField()));
+                    } else {
+                        getMethod = ob.getClass().getMethod("get".concat(map.referenceField()));
+                    }
                     //pega o método set referenciado na variável sm e invoca o método getText do TextField
                     if (mt.getReturnType() == JTextFieldCBI.class | mt.getReturnType() == JTextField.class) {
                         mt.invoke(form).getClass().getMethod("setText", map.typeReference()).invoke(mt.invoke(form), getMethod.invoke(ob));
