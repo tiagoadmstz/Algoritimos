@@ -28,7 +28,7 @@ public @interface MapFrameField {
      * 
      * @return nome do campo de referencia
      */
-    public String referenceField() default "";
+    public String referenceField();
     /**
      * Tipo do campo de referencia do bean, sempre deve-se informar com o .class
      * 
@@ -37,7 +37,7 @@ public @interface MapFrameField {
      * 
      * @return tipo do campo de referencia
      */
-    public Class typeReference() default Object.class;
+    public Class typeReference();
     /**
      * Quando existir referencia de outro objeto dentro do bean deve-se informar o nome dessa classe sempre com a primeira letra maiuscula
      * 
@@ -46,6 +46,6 @@ public @interface MapFrameField {
      * 
      * @return nome da subClasse
      */
-    public String subClassReference() default "null";
+    public String subClassReference() default "";
     
 }

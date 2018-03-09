@@ -8,6 +8,7 @@ package algoritimos.listener;
 import algoritimos.annotations.MapFrameField;
 import algoritimos.beans.JTextFieldCBI;
 import algoritimos.calculos.Datas;
+import algoritimos.cast.CastFactory;
 import algoritimos.controle.ControleInstancias;
 import algoritimos.dao.EntityManagerHelper;
 import algoritimos.dao.EntityManagerHelper.PERSISTENCE_UNIT;
@@ -34,10 +35,13 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.AbstractButton;
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -48,6 +52,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.event.CaretListener;
@@ -219,20 +224,30 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
                 MapFrameField map = mt.getAnnotation(MapFrameField.class); //recupera referencia da anotação
                 try {
                     Method setMethod;
+                    String referenceField;
+                    try {
+                        referenceField = map.referenceField().replaceFirst(map.referenceField().substring(0, 1), map.referenceField().substring(0, 1).toUpperCase());
+                    } catch (Exception ex) {
+                        break;
+                    }
 
                     //pega o método get do objeto de referencia
-                    if (!Objects.equals("null", map.subClassReference())) {
+                    if (!Objects.equals("", map.subClassReference())) {
                         //Method getMethod = ob.getClass().getMethod("get".concat(map.subClassReference()));
                         setMethod = ob.getClass().getMethod("get".concat(map.subClassReference()))
-                                .getClass().getMethod("set".concat(map.referenceField()), map.typeReference());
+                                .getClass().getMethod("set".concat(referenceField), map.typeReference());
                     } else {
-                        setMethod = ob.getClass().getMethod("set".concat(map.referenceField()), map.typeReference());
+                        try {
+                            setMethod = ob.getClass().getMethod("set".concat(referenceField), map.typeReference());
+                        } catch (Exception ex) {
+                            setMethod = ob.getClass().getMethod("set".concat(referenceField), CastFactory.castReference(map.typeReference()));
+                        }
                     }
 
                     //verifica o tipo de retorno do getter
-                    if (mt.getReturnType() == JTextFieldCBI.class | mt.getReturnType() == JTextField.class) {
+                    if (mt.getReturnType() == JTextFieldCBI.class | mt.getReturnType() == JTextField.class | mt.getReturnType() == JTextArea.class) {
                         //pega o método set referenciado na variável sm e invoca o método getText do TextField
-                        setMethod.invoke(ob, (mt.invoke(form).getClass().getMethod("getText")).invoke(mt.invoke(form)));
+                        setMethod.invoke(ob, CastFactory.cast((mt.invoke(form).getClass().getMethod("getText")).invoke(mt.invoke(form)), map.typeReference()));
                     } else if (mt.getReturnType() == JComboBox.class) {
                         String metodo = null;
                         if (map.typeReference() == String.class) {
@@ -240,9 +255,21 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
                         } else if (map.typeReference() == Integer.class) {
                             metodo = "getSelectedIndex";
                         }
-                        setMethod.invoke(ob, (String) (mt.invoke(form).getClass().getMethod(metodo)).invoke(mt.invoke(form)));
+                        setMethod.invoke(ob, (mt.invoke(form).getClass().getMethod(metodo)).invoke(mt.invoke(form)));
                     } else if (mt.getReturnType() == JCheckBox.class) {
                         setMethod.invoke(ob, (mt.invoke(form).getClass().getMethod("isSelected")).invoke(mt.invoke(form)));
+                    } else if (mt.getReturnType() == ButtonGroup.class) {
+                        Enumeration<AbstractButton> e = (Enumeration<AbstractButton>) (mt.invoke(form).getClass().getMethod("getElements").invoke(mt.invoke(form)));
+                        while (e.hasMoreElements()) {
+                            AbstractButton ab = e.nextElement();
+                            if (ab.isSelected()) {
+                                setMethod.invoke(ob, ab.getText());
+                                break;
+                            }
+                        }
+                    } else if(mt.getReturnType() == JTable.class){
+                        TableModelCBI model = (TableModelCBI) mt.invoke(form).getClass().getMethod("getModel").invoke(mt.invoke(form));
+                        setMethod.invoke(ob, model.getLista());
                     }
                 } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
                     Logger.getLogger(ListenerCBI.class.getName()).log(Level.SEVERE, null, ex);
@@ -270,27 +297,48 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
                 MapFrameField map = mt.getAnnotation(MapFrameField.class); //recupera referencia da anotação
                 try {
                     Method getMethod;
-                    
+                    String referenceField;
+                    try {
+                        referenceField = map.referenceField().replaceFirst(map.referenceField().substring(0, 1), map.referenceField().substring(0, 1).toUpperCase());
+                    } catch (Exception ex) {
+                        break;
+                    }
+
                     //pega o método get do objeto de referencia
-                    if (Objects.equals("null", map.subClassReference())) {
+                    if (!Objects.equals("", map.subClassReference())) {
                         getMethod = ob.getClass().getMethod("get".concat(map.subClassReference()))
-                                .getClass().getMethod("get".concat(map.referenceField()));
+                                .getClass().getMethod("get".concat(referenceField));
                     } else {
-                        getMethod = ob.getClass().getMethod("get".concat(map.referenceField()));
+                        if (Objects.equals(Boolean.class, map.typeReference()) | Objects.equals(boolean.class, map.typeReference())) {
+                            getMethod = ob.getClass().getMethod("is".concat(referenceField));
+                        } else {
+                            getMethod = ob.getClass().getMethod("get".concat(referenceField));
+                        }
                     }
                     //pega o método set referenciado na variável sm e invoca o método getText do TextField
-                    if (mt.getReturnType() == JTextFieldCBI.class | mt.getReturnType() == JTextField.class) {
-                        mt.invoke(form).getClass().getMethod("setText", map.typeReference()).invoke(mt.invoke(form), getMethod.invoke(ob));
+                    if (mt.getReturnType() == JTextFieldCBI.class | mt.getReturnType() == JTextField.class | mt.getReturnType() == JTextArea.class) {
+                        mt.invoke(form).getClass().getMethod("setText", String.class).invoke(mt.invoke(form), CastFactory.cast(getMethod.invoke(ob), String.class));
                     } else if (mt.getReturnType() == JComboBox.class) {
-                        String metodo = null;
                         if (map.typeReference() == String.class) {
-                            metodo = "setSelectedItem";
+                            mt.invoke(form).getClass().getMethod("setSelectedItem", Object.class).invoke(mt.invoke(form), CastFactory.cast(getMethod.invoke(ob), Object.class));
                         } else if (map.typeReference() == Integer.class) {
-                            metodo = "setSelectedIndex";
+                            mt.invoke(form).getClass().getMethod("setSelectedIndex", int.class).invoke(mt.invoke(form), getMethod.invoke(ob));
                         }
-                        mt.invoke(form).getClass().getMethod(metodo, map.typeReference()).invoke(mt.invoke(form), getMethod.invoke(ob));
                     } else if (mt.getReturnType() == JCheckBox.class) {
                         mt.invoke(form).getClass().getMethod("setSelected", map.typeReference()).invoke(mt.invoke(form), getMethod.invoke(ob));
+                    } else if (mt.getReturnType() == ButtonGroup.class) {
+                        Enumeration<AbstractButton> e = (Enumeration<AbstractButton>) (mt.invoke(form).getClass().getMethod("getElements").invoke(mt.invoke(form)));
+                        while (e.hasMoreElements()) {
+                            AbstractButton ab = e.nextElement();
+                            if (Objects.equals(getMethod.invoke(ob), ab.getText())) {
+                                ab.setSelected(true);
+                            } else {
+                                ab.setSelected(false);
+                            }
+                        }
+                    } else if(mt.getReturnType() == JTable.class){
+                        TableModelCBI model = (TableModelCBI) mt.invoke(form).getClass().getMethod("getModel").invoke(mt.invoke(form));
+                        model.addLista((List<?>) getMethod.invoke(ob));
                     }
                 } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
                     Logger.getLogger(ListenerCBI.class.getName()).log(Level.SEVERE, null, ex);
