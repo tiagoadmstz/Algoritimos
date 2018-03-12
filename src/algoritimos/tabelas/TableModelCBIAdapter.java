@@ -7,6 +7,7 @@ package algoritimos.tabelas;
  */
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,6 +19,7 @@ public class TableModelCBIAdapter extends TableModelCBI{
     protected List<Object> lista;
 
     public TableModelCBIAdapter() {
+        lista = new ArrayList();
     }
 
     public TableModelCBIAdapter(List<?> lista) {
