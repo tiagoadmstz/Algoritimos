@@ -225,17 +225,19 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
                 try {
                     Method setMethod;
                     String referenceField;
+                    String subClassReference = map.subClassReference();
                     try {
-                        referenceField = map.referenceField().replaceFirst(map.referenceField().substring(0, 1), map.referenceField().substring(0, 1).toUpperCase());
+                        referenceField = map.referenceField().replaceFirst("^(\\w{1})", map.referenceField().substring(0, 1).toUpperCase());
                     } catch (Exception ex) {
                         break;
                     }
 
                     //pega o método get do objeto de referencia
-                    if (!Objects.equals("", map.subClassReference())) {
-                        //Method getMethod = ob.getClass().getMethod("get".concat(map.subClassReference()));
-                        setMethod = ob.getClass().getMethod("get".concat(map.subClassReference()))
-                                .getClass().getMethod("set".concat(referenceField), map.typeReference());
+                    if (!Objects.equals("", subClassReference)) {
+                        subClassReference = !Objects.equals("", map.subClassReference()) ? map.subClassReference().replaceFirst("^(\\w{1})", map.subClassReference().substring(0, 1).toUpperCase()) : null;
+                        Method getMethod = ob.getClass().getMethod("get".concat(subClassReference));
+                        ob = getMethod.invoke(ob);
+                        setMethod = ob.getClass().getMethod("set".concat(referenceField), map.typeReference());
                     } else {
                         try {
                             setMethod = ob.getClass().getMethod("set".concat(referenceField), map.typeReference());
@@ -267,7 +269,7 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
                                 break;
                             }
                         }
-                    } else if(mt.getReturnType() == JTable.class){
+                    } else if (mt.getReturnType() == JTable.class) {
                         TableModelCBI model = (TableModelCBI) mt.invoke(form).getClass().getMethod("getModel").invoke(mt.invoke(form));
                         setMethod.invoke(ob, model.getLista());
                     }
@@ -298,16 +300,19 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
                 try {
                     Method getMethod;
                     String referenceField;
+                    String subClassReference = map.subClassReference();
                     try {
-                        referenceField = map.referenceField().replaceFirst(map.referenceField().substring(0, 1), map.referenceField().substring(0, 1).toUpperCase());
+                        referenceField = map.referenceField().replaceFirst("^(\\w{1})", map.referenceField().substring(0, 1).toUpperCase());
                     } catch (Exception ex) {
                         break;
                     }
 
                     //pega o método get do objeto de referencia
-                    if (!Objects.equals("", map.subClassReference())) {
-                        getMethod = ob.getClass().getMethod("get".concat(map.subClassReference()))
-                                .getClass().getMethod("get".concat(referenceField));
+                    if (!Objects.equals("", subClassReference)) {
+                        subClassReference = !Objects.equals("", map.subClassReference()) ? map.subClassReference().replaceFirst("^(\\w{1})", map.subClassReference().substring(0, 1).toUpperCase()) : null;
+                        getMethod = ob.getClass().getMethod("get".concat(subClassReference));
+                        ob = getMethod.invoke(ob);
+                        getMethod = ob.getClass().getMethod("get".concat(referenceField));
                     } else {
                         if (Objects.equals(Boolean.class, map.typeReference()) | Objects.equals(boolean.class, map.typeReference())) {
                             getMethod = ob.getClass().getMethod("is".concat(referenceField));
@@ -336,7 +341,7 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
                                 ab.setSelected(false);
                             }
                         }
-                    } else if(mt.getReturnType() == JTable.class){
+                    } else if (mt.getReturnType() == JTable.class) {
                         TableModelCBI model = (TableModelCBI) mt.invoke(form).getClass().getMethod("getModel").invoke(mt.invoke(form));
                         model.addLista((List<?>) getMethod.invoke(ob));
                     }
