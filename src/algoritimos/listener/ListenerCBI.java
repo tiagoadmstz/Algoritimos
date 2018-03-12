@@ -271,6 +271,7 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
                         }
                     } else if (mt.getReturnType() == JTable.class) {
                         TableModelCBI model = (TableModelCBI) mt.invoke(form).getClass().getMethod("getModel").invoke(mt.invoke(form));
+                        List<?> teste = model.getLista();
                         setMethod.invoke(ob, model.getLista());
                     }
                 } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
@@ -343,6 +344,7 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
                         }
                     } else if (mt.getReturnType() == JTable.class) {
                         TableModelCBI model = (TableModelCBI) mt.invoke(form).getClass().getMethod("getModel").invoke(mt.invoke(form));
+                        model.deletarLista();
                         model.addLista((List<?>) getMethod.invoke(ob));
                     }
                 } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
