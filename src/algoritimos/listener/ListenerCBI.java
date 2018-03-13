@@ -490,10 +490,10 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
      * @return Retorna um formulário de pesquisa simplificada. Será necessário
      * fazer o setVisible
      */
-    public PesquisaDefaultForm pesquisar(String titulo, TableModelCBI model, TableModelCBI modelSolicitante, ListenerCBI listenerSolicitante) {
+    public PesquisaDefaultForm pesquisar(String titulo, TableModelCBI model, TableModelCBI modelSolicitante, ListenerCBI listenerSolicitante, int... tamanho) {
         PesquisaDefaultForm pesquisa = (PesquisaDefaultForm) ControleInstancias.getInstance(PesquisaDefaultForm.class.getName());
         if (pesquisa == null) {
-            pesquisa = new PesquisaDefaultForm(titulo, model, listenerSolicitante, modelSolicitante);
+            pesquisa = new PesquisaDefaultForm(titulo, model, listenerSolicitante, modelSolicitante, tamanho);
             ControleInstancias.setControleInstancias(PesquisaDefaultForm.class.getName(), pesquisa);
         }
         return pesquisa;

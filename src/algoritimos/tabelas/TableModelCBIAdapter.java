@@ -91,7 +91,7 @@ public class TableModelCBIAdapter extends TableModelCBI{
 
     @Override
     public void atualizarItem(Object object, int rowIndex) {
-        
+        lista.set(rowIndex, object);
     }
 
     @Override
