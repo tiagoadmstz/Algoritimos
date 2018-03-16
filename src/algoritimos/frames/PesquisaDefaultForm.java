@@ -312,6 +312,7 @@ public final class PesquisaDefaultForm extends javax.swing.JFrame {
         @Override
         public void itemStateChanged(ItemEvent e) {
             if (e.getStateChange() == ItemEvent.SELECTED || e.getStateChange() == ItemEvent.DESELECTED) {
+                form.getCbPesqusia().setSelectedIndex(form.getTbPesquisa().getSelectedColumn());
                 form.getTxtPesquisa().requestFocus();
             }
         }
