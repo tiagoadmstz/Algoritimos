@@ -41,12 +41,28 @@ public class JStatusBarCBI extends JPanel implements Runnable {
     private JSeparator[] separadores;
     private Thread relogio;
     public JFrame frame;
-    private boolean stop = true;
+    private boolean start = true;
 
     public JStatusBarCBI() {
         inicializeComponents();
     }
 
+    public JLabel getLabel(String key){
+        return mapLabel.get(key);
+    }
+    
+    public void setUsuarioAtual(String nomeUsuario){
+        mapLabel.get("usuarioAtual").setText(nomeUsuario);
+    }
+    
+    public void setVersao(String versao){
+        mapLabel.get(versao).setText(versao);
+    }
+    
+    public void setDataFalhaAutenticacao(String dataFalha){
+        mapLabel.get("F-AT").setText(dataFalha);
+    }
+    
     private void inicializeComponents() {
         this.setPreferredSize(new Dimension(500, 28));
         this.setBorder(BorderFactory.createLoweredBevelBorder());
@@ -176,7 +192,7 @@ public class JStatusBarCBI extends JPanel implements Runnable {
             frame.addWindowListener(new WindowAdapter() {
                 @Override
                 public void windowClosed(WindowEvent e) {
-                    stop = false;
+                    start = false;
                 }
             });
         }
@@ -195,7 +211,7 @@ public class JStatusBarCBI extends JPanel implements Runnable {
             }
         }, AWTEvent.KEY_EVENT_MASK);
 
-        while (stop) {
+        while (start) {
             try {
                 Thread.sleep(1000);
                 labels[4].setText(LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
