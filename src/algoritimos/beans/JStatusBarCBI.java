@@ -15,7 +15,12 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,22 +52,35 @@ public class JStatusBarCBI extends JPanel implements Runnable {
         inicializeComponents();
     }
 
-    public JLabel getLabel(String key){
+    public JLabel getLabel(String key) {
         return mapLabel.get(key);
     }
-    
-    public void setUsuarioAtual(String nomeUsuario){
+
+    public void setUsuarioAtual(String nomeUsuario) {
         mapLabel.get("usuarioAtual").setText(nomeUsuario);
     }
-    
-    public void setVersao(String versao){
+
+    public void setVersao(String versao) {
         mapLabel.get(versao).setText(versao);
     }
-    
-    public void setDataFalhaAutenticacao(String dataFalha){
+
+    public void setDataFalhaAutenticacao(String dataFalha) {
         mapLabel.get("F-AT").setText(dataFalha);
     }
-    
+
+    /**
+     * Este método verifica se existe sobreposição ou salto temporal em locais
+     * onde existe horário de verão DST(Daylight Saving Time)
+     * 
+     * YYYY-MM-DDThh:mm:ssTZD = 2018-03-19T11:58:08-03:00
+     */
+    private void verificacaoDST() {
+        LocalDateTime ldt = LocalDateTime.now();
+        OffsetDateTime odt = ldt.atOffset(ZoneOffset.UTC);
+        ZonedDateTime zdt = ldt.atZone(ZoneId.systemDefault());
+        String d = zdt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssxxx"));
+    }
+
     private void inicializeComponents() {
         this.setPreferredSize(new Dimension(500, 28));
         this.setBorder(BorderFactory.createLoweredBevelBorder());

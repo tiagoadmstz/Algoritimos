@@ -7,8 +7,14 @@ package algoritimos.tabelas;
  */
 
 
+import algoritimos.regex.REGEX;
+import algoritimos.regex.RegexUtil;
+import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.function.Function;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -17,6 +23,7 @@ import java.util.List;
 public class TableModelCBIAdapter extends TableModelCBI{
 
     protected List<Object> lista;
+    protected int selectedRow = -1;
 
     public TableModelCBIAdapter() {
         lista = new ArrayList();
@@ -81,7 +88,8 @@ public class TableModelCBIAdapter extends TableModelCBI{
 
     @Override
     public void aplicarFiltro(int column, String filtro) {
-        
+        Comparator comp = Collator.getInstance();
+        lista.sort(comp);
     }
 
     @Override
@@ -92,11 +100,12 @@ public class TableModelCBIAdapter extends TableModelCBI{
     @Override
     public void atualizarItem(Object object, int rowIndex) {
         lista.set(rowIndex, object);
+        fireTableRowsUpdated(rowIndex, rowIndex);
     }
 
     @Override
     public void setSelectedRow(int row) {
-        
+        this.selectedRow = row;
     }
     
 }

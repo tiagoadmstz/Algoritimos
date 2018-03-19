@@ -35,7 +35,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.time.LocalDate;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
@@ -47,6 +46,7 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -61,6 +61,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableRowSorter;
+import javax.swing.text.MaskFormatter;
 
 /**
  *
@@ -638,6 +639,21 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
                         case "hora":
                             textField.setText(Datas.getHour(textField.getText(), 1));
                             break;
+                        case "valor":
+                            MaskFormatter mask = new MaskFormatter();
+                            String text = textField.getText().replace(",", ".");
+                            if(!text.contains(".")){
+                                text = text.concat(".00");
+                            } else if (text.contains(".")){
+                                String sufixo = text.substring(text.indexOf(".") + 1, text.length());
+                                if(sufixo.length() < 2){
+                                    text = text.concat(sufixo.length() == 1 ? "0" : "00");
+                                } else if (sufixo.length() > 2){
+                                    text = text.replace("." + sufixo, "." + sufixo.substring(0, 2));
+                                }
+                            }
+                            text = text.contains("R$") ? text : "R$ ".concat(text);
+                            textField.setText(text);
                     }
                 }
             }

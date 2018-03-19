@@ -303,7 +303,7 @@ public final class PesquisaDefaultForm extends javax.swing.JFrame {
                 }
             }
         }
-        
+
         @Override
         public void caretUpdate(CaretEvent e) {
             sorter.setRowFilter(RowFilter.regexFilter(RegexUtil.getRegex(REGEX.CONTEM, form.getTxtPesquisa().getText()), form.getCbPesqusia().getSelectedIndex()));
@@ -312,7 +312,9 @@ public final class PesquisaDefaultForm extends javax.swing.JFrame {
         @Override
         public void itemStateChanged(ItemEvent e) {
             if (e.getStateChange() == ItemEvent.SELECTED || e.getStateChange() == ItemEvent.DESELECTED) {
-                form.getCbPesqusia().setSelectedIndex(form.getTbPesquisa().getSelectedColumn());
+                if (form.getTbPesquisa().getSelectedColumn() != -1) {
+                    form.getCbPesqusia().setSelectedIndex(form.getTbPesquisa().getSelectedColumn());
+                }
                 form.getTxtPesquisa().requestFocus();
             }
         }
