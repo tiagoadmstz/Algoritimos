@@ -6,7 +6,13 @@
 package algoritimos.cast;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalField;
 import java.util.Objects;
 
 /**
@@ -25,12 +31,18 @@ public class CastFactory {
                 object = Boolean.parseBoolean(object.toString());
             } else if (Objects.equals(String.class, classe)) {
                 try {
-                    object = String.valueOf(object);
+                    if (object instanceof ZonedDateTime) {
+                        object = ((ZonedDateTime) object).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                    } else {
+                        object = String.valueOf(object);
+                    }
                 } catch (Exception ex) {
                     object = object.toString();
                 }
             } else if (Objects.equals(LocalDate.class, classe)) {
                 object = LocalDate.parse(object.toString(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            } else if (Objects.equals(ZonedDateTime.class, classe)) {
+                object = ZonedDateTime.of(LocalDate.parse(object.toString(), DateTimeFormatter.ofPattern("dd/MM/yyyy")), LocalTime.now(), ZoneId.systemDefault());
             }
             return object;
         } catch (Exception e) {
