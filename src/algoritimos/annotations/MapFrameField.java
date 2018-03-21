@@ -47,5 +47,10 @@ public @interface MapFrameField {
      * @return nome da subClasse
      */
     public String subClassReference() default "";
-    
+    /**
+     * Quando existir varias classes que compõe um formulário este atributo faz a filtragem de setagem dos dados direcionando para a classe pertencente
+     * 
+     * @return nome da classe de controle
+     */
+    public String controlClassType() default "";
 }
