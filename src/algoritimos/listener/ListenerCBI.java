@@ -46,7 +46,6 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -218,9 +217,9 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
      * dados dos formulários dinâmicamente
      *
      * @param form Formulário que será trabalhado
-     * @param ob Objeto que é representado pelo formulário
+     * @param objetos Objeto que é representado pelo formulário
      */
-    public void setDados(JFrame form, Object ob) {
+    public void setDados(JFrame form, Object... objetos) {
         for (Method mt : form.getClass().getMethods()) { //pega todos os metodos do formulário
             if (mt.isAnnotationPresent(MapFrameField.class)) { //verifica se são do tipo MapFrameFields
                 MapFrameField map = mt.getAnnotation(MapFrameField.class); //recupera referencia da anotação
@@ -234,6 +233,16 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
                         break;
                     }
 
+                    Object ob = objetos[0];
+
+                    //começo da instrução
+                    if (objetos.length > 1 && !Objects.equals("", map.controlClassType())) {
+                        for (Object obj : objetos) {
+                            if (obj.getClass().getName().contains(map.controlClassType())) {
+                                ob = obj;
+                            }
+                        }
+                    }
                     //pega o método get do objeto de referencia
                     if (!Objects.equals("", subClassReference)) {
                         subClassReference = !Objects.equals("", map.subClassReference()) ? map.subClassReference().replaceFirst("^(\\w{1})", map.subClassReference().substring(0, 1).toUpperCase()) : null;
@@ -276,7 +285,9 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
                         List<?> teste = model.getLista();
                         setMethod.invoke(ob, model.getLista());
                     }
-                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
+
+                    //fim da instrução
+                } catch (NullPointerException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
                     Logger.getLogger(ListenerCBI.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -294,9 +305,9 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
      * refletion com annotations
      *
      * @param form Formulário que será trabalhado
-     * @param ob Objeto representado pelo formulário
+     * @param objetos Objeto representado pelo formulário
      */
-    public void getDados(JFrame form, Object ob) {
+    public void getDados(JFrame form, Object... objetos) {
         for (Method mt : form.getClass().getMethods()) { //pega todos os metodos do formulário
             if (mt.isAnnotationPresent(MapFrameField.class)) { //verifica se são do tipo SETTER
                 MapFrameField map = mt.getAnnotation(MapFrameField.class); //recupera referencia da anotação
@@ -310,6 +321,16 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
                         break;
                     }
 
+                    Object ob = objetos[0];
+
+                    //começo da instrução
+                    if (objetos.length > 1 && !Objects.equals("", map.controlClassType())) {
+                        for (Object obj : objetos) {
+                            if (obj.getClass().getName().contains(map.controlClassType())) {
+                                ob = obj;
+                            }
+                        }
+                    }
                     //pega o método get do objeto de referencia
                     if (!Objects.equals("", subClassReference)) {
                         subClassReference = !Objects.equals("", map.subClassReference()) ? map.subClassReference().replaceFirst("^(\\w{1})", map.subClassReference().substring(0, 1).toUpperCase()) : null;
@@ -349,6 +370,7 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
                         model.deletarLista();
                         model.addLista((List<?>) getMethod.invoke(ob));
                     }
+
                 } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
                     Logger.getLogger(ListenerCBI.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -642,13 +664,13 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
                         case "valor":
                             MaskFormatter mask = new MaskFormatter();
                             String text = textField.getText().replace(",", ".");
-                            if(!text.contains(".")){
+                            if (!text.contains(".")) {
                                 text = text.concat(".00");
-                            } else if (text.contains(".")){
+                            } else if (text.contains(".")) {
                                 String sufixo = text.substring(text.indexOf(".") + 1, text.length());
-                                if(sufixo.length() < 2){
+                                if (sufixo.length() < 2) {
                                     text = text.concat(sufixo.length() == 1 ? "0" : "00");
-                                } else if (sufixo.length() > 2){
+                                } else if (sufixo.length() > 2) {
                                     text = text.replace("." + sufixo, "." + sufixo.substring(0, 2));
                                 }
                             }
