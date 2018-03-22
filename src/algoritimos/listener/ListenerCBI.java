@@ -282,8 +282,7 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
                         }
                     } else if (mt.getReturnType() == JTable.class) {
                         TableModelCBI model = (TableModelCBI) mt.invoke(form).getClass().getMethod("getModel").invoke(mt.invoke(form));
-                        List<?> teste = model.getLista();
-                        setMethod.invoke(ob, model.getLista());
+                        setMethod.invoke(ob, model.clonar());
                     }
 
                     //fim da instrução
@@ -443,22 +442,38 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
      * @param botoes lista de botoes a serem manipulados
      * @return retorna se a transação foi bem sucedida
      */
-    public boolean salvar(int tipo, EntityManagerHelper emh, PERSISTENCE_UNIT persistence_unit, Object object, JFrame form, List<JPanel> paineis, List<JComponent> botoes) {
+    public boolean salvar(int tipo, EntityManagerHelper emh, PERSISTENCE_UNIT persistence_unit, JFrame form, List<JPanel> paineis, List<JComponent> botoes, Object... object) {
         switch (tipo) {
             case 0: //salvar
                 if (JOptionPane.showConfirmDialog(form, "Deseja salvar o registro?", "Salvar Registro", JOptionPane.YES_NO_OPTION) == 0) {
-                    this.setDados();
-                    emh.getOperation(EntityManagerHelper.OPERATION_TYPE.SAVE, object, persistence_unit);
+                    try {
+                        this.setDados(form, object);
+                    } catch (Exception ex) {
+                        this.setDados();
+                    }
+                    for (Object ob : object) {
+                        emh.getOperation(EntityManagerHelper.OPERATION_TYPE.SAVE, ob, persistence_unit);
+                    }
                     this.enableOrDisabelComponentsPanel(paineis, OPERACAO.SALVAR);
                     this.setEnableButtons(OPERACAO.SALVAR, botoes);
-                    //this.getDados();
+                    try {
+                        this.getDados(form, object);
+                    } catch (Exception ex) {
+                        this.getDados();
+                    }
                     return true;
                 }
                 return false;
             case 1: //alterar
                 if (JOptionPane.showConfirmDialog(form, "Deseja salvar as alterações feitas no registro?", "Salvar Registro", JOptionPane.YES_NO_OPTION) == 0) {
-                    this.setDados();
-                    emh.getOperation(EntityManagerHelper.OPERATION_TYPE.UPDATE, object, persistence_unit);
+                    try {
+                        this.setDados(form, object);
+                    } catch (Exception ex) {
+                        this.setDados();
+                    }
+                    for (Object ob : object) {
+                        emh.getOperation(EntityManagerHelper.OPERATION_TYPE.UPDATE, ob, persistence_unit);
+                    }
                     this.enableOrDisabelComponentsPanel(paineis, OPERACAO.SALVAR);
                     this.setEnableButtons(OPERACAO.SALVAR, botoes);
                     return true;

@@ -5,22 +5,16 @@ package algoritimos.tabelas;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
-
-import algoritimos.regex.REGEX;
-import algoritimos.regex.RegexUtil;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Function;
-import java.util.regex.Pattern;
 
 /**
  *
  * @author Tiago D. Teixeira
  */
-public class TableModelCBIAdapter extends TableModelCBI{
+public class TableModelCBIAdapter extends TableModelCBI {
 
     protected List<Object> lista;
     protected int selectedRow = -1;
@@ -32,22 +26,22 @@ public class TableModelCBIAdapter extends TableModelCBI{
     public TableModelCBIAdapter(List<?> lista) {
         this.lista = (List<Object>) lista;
     }
-    
+
     @Override
     public int getRowCount() {
         return lista.size();
     }
-    
-    public void setLista(List<?> lista){
+
+    public void setLista(List<?> lista) {
         this.lista = (List<Object>) lista;
     }
-    
+
     @Override
     public void addObject(Object Object) {
         lista.add(Object);
         fireTableDataChanged();
     }
-    
+
     @Override
     public void removeObject(int rowIndex) {
         lista.remove(rowIndex);
@@ -77,13 +71,18 @@ public class TableModelCBIAdapter extends TableModelCBI{
     }
 
     @Override
+    public List<?> clonar() {
+        return new ArrayList(lista);
+    }
+
+    @Override
     public void resetarLista() {
-        
+
     }
 
     @Override
     public void atualizarItem(Object object) {
-        
+
     }
 
     @Override
@@ -94,7 +93,7 @@ public class TableModelCBIAdapter extends TableModelCBI{
 
     @Override
     public void aplicarFiltroLetra(String column, String filtro) {
-        
+
     }
 
     @Override
@@ -107,5 +106,5 @@ public class TableModelCBIAdapter extends TableModelCBI{
     public void setSelectedRow(int row) {
         this.selectedRow = row;
     }
-    
+
 }

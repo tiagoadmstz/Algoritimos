@@ -163,10 +163,10 @@ public class CadUsuario extends javax.swing.JFrame {
                     fechar(form);
                     break;
                 case "salvar":
-                    salvar(0, emh, persistence_unit, usuario, form, paineis, buttons);
+                    salvar(0, emh, persistence_unit, form, paineis, buttons, usuario);
                     break;
                 case "alterar":
-                    salvar(1, emh, persistence_unit, usuario, form, paineis, buttons);
+                    salvar(1, emh, persistence_unit, form, paineis, buttons, usuario);
                     alterar(paineis, buttons);
                     break;
             }
