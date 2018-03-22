@@ -5,14 +5,12 @@
  */
 package algoritimos.cast;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoField;
-import java.time.temporal.TemporalField;
 import java.util.Objects;
 
 /**
@@ -24,25 +22,29 @@ public class CastFactory {
     public static Object cast(Object object, Class<?> classe) {
         try {
             if (Objects.equals(Long.class, classe) | Objects.equals(long.class, classe)) {
-                object = Long.parseLong(object.toString());
+                object = object != null ? Long.parseLong(object.toString()) : null;
             } else if (Objects.equals(Integer.class, classe) | Objects.equals(int.class, classe)) {
-                object = Integer.parseInt(object.toString());
+                object = object != null ? Integer.parseInt(object.toString()) : null;
             } else if (Objects.equals(Boolean.class, classe) | Objects.equals(boolean.class, classe)) {
-                object = Boolean.parseBoolean(object.toString());
+                object = object != null ? Boolean.parseBoolean(object.toString()) : false;
             } else if (Objects.equals(String.class, classe)) {
                 try {
                     if (object instanceof ZonedDateTime) {
                         object = ((ZonedDateTime) object).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
                     } else {
-                        object = String.valueOf(object);
+                        object = object != null ? String.valueOf(object) : "";
                     }
                 } catch (Exception ex) {
                     object = object.toString();
                 }
             } else if (Objects.equals(LocalDate.class, classe)) {
-                object = LocalDate.parse(object.toString(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                object = object != null ? LocalDate.parse(object.toString(), DateTimeFormatter.ofPattern("dd/MM/yyyy")) : null;
+            } else if (Objects.equals(LocalTime.class, classe)) {
+                object = object != null ? LocalTime.parse(object.toString(), DateTimeFormatter.ofPattern("HH:mm")) : null;
             } else if (Objects.equals(ZonedDateTime.class, classe)) {
-                object = ZonedDateTime.of(LocalDate.parse(object.toString(), DateTimeFormatter.ofPattern("dd/MM/yyyy")), LocalTime.now(), ZoneId.systemDefault());
+                object = object != null ? ZonedDateTime.of(LocalDate.parse(object.toString(), DateTimeFormatter.ofPattern("dd/MM/yyyy")), LocalTime.now(), ZoneId.systemDefault()): null;
+            } else if (Objects.equals(BigDecimal.class, classe)) {
+                object = object != null ? new BigDecimal(object.toString().replaceAll("^[\\w][\\p{Punct}][\\p{Space}]", "")) : null;
             }
             return object;
         } catch (Exception e) {
