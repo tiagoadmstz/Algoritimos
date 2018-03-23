@@ -70,7 +70,7 @@ public class EntityManagerHelper {
         EntityManager session = null;
         if (sessions.isEmpty()) {
             sessions.put(persistence_unit.toString(), new ThreadLocal<>());
-            session = sessions.get(persistence_unit.toString()).get();            
+            session = sessions.get(persistence_unit.toString()).get();
             session = session == null ? EntityManagerFactoryService.getEntityManagerFactory(persistence_unit.toString(), propMap).createEntityManager() : session;
         }
         return session;

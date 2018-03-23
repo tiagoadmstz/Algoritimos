@@ -145,7 +145,9 @@ public class ManipulaFrames {
      * @param componentes lista de botoes ou itens de menu
      */
     public static void operacaoEnableOrder(OPERACAO codigoOperacao, List<JComponent> componentes) {
-        operacaoEnableOrder(codigoOperacao, componentes.toArray(new JComponent[componentes.size()]));
+        if (componentes != null) {
+            operacaoEnableOrder(codigoOperacao, componentes.toArray(new JComponent[componentes.size()]));
+        }
     }
 
     public static void enable(Container container, String... exclusoes) {

@@ -60,6 +60,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableRowSorter;
+import javax.swing.text.MaskFormatter;
 
 /**
  *
@@ -216,26 +217,38 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
      * dados dos formulários dinâmicamente
      *
      * @param form Formulário que será trabalhado
-     * @param ob Objeto que é representado pelo formulário
+     * @param objetos Objeto que é representado pelo formulário
      */
-    public void setDados(JFrame form, Object ob) {
+    public void setDados(JFrame form, Object... objetos) {
         for (Method mt : form.getClass().getMethods()) { //pega todos os metodos do formulário
             if (mt.isAnnotationPresent(MapFrameField.class)) { //verifica se são do tipo MapFrameFields
                 MapFrameField map = mt.getAnnotation(MapFrameField.class); //recupera referencia da anotação
                 try {
                     Method setMethod;
                     String referenceField;
+                    String subClassReference = map.subClassReference();
                     try {
-                        referenceField = map.referenceField().replaceFirst(map.referenceField().substring(0, 1), map.referenceField().substring(0, 1).toUpperCase());
+                        referenceField = map.referenceField().replaceFirst("^(\\w{1})", map.referenceField().substring(0, 1).toUpperCase());
                     } catch (Exception ex) {
                         break;
                     }
 
+                    Object ob = objetos[0];
+
+                    //começo da instrução
+                    if (objetos.length > 1 && !Objects.equals("", map.controlClassType())) {
+                        for (Object obj : objetos) {
+                            if (obj.getClass().getName().contains(map.controlClassType())) {
+                                ob = obj;
+                            }
+                        }
+                    }
                     //pega o método get do objeto de referencia
-                    if (!Objects.equals("", map.subClassReference())) {
-                        //Method getMethod = ob.getClass().getMethod("get".concat(map.subClassReference()));
-                        setMethod = ob.getClass().getMethod("get".concat(map.subClassReference()))
-                                .getClass().getMethod("set".concat(referenceField), map.typeReference());
+                    if (!Objects.equals("", subClassReference)) {
+                        subClassReference = !Objects.equals("", map.subClassReference()) ? map.subClassReference().replaceFirst("^(\\w{1})", map.subClassReference().substring(0, 1).toUpperCase()) : null;
+                        Method getMethod = ob.getClass().getMethod("get".concat(subClassReference));
+                        ob = getMethod.invoke(ob);
+                        setMethod = ob.getClass().getMethod("set".concat(referenceField), map.typeReference());
                     } else {
                         try {
                             setMethod = ob.getClass().getMethod("set".concat(referenceField), map.typeReference());
@@ -267,11 +280,13 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
                                 break;
                             }
                         }
-                    } else if(mt.getReturnType() == JTable.class){
+                    } else if (mt.getReturnType() == JTable.class) {
                         TableModelCBI model = (TableModelCBI) mt.invoke(form).getClass().getMethod("getModel").invoke(mt.invoke(form));
-                        setMethod.invoke(ob, model.getLista());
+                        setMethod.invoke(ob, model.clonar());
                     }
-                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
+
+                    //fim da instrução
+                } catch (NullPointerException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
                     Logger.getLogger(ListenerCBI.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -289,25 +304,38 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
      * refletion com annotations
      *
      * @param form Formulário que será trabalhado
-     * @param ob Objeto representado pelo formulário
+     * @param objetos Objeto representado pelo formulário
      */
-    public void getDados(JFrame form, Object ob) {
+    public void getDados(JFrame form, Object... objetos) {
         for (Method mt : form.getClass().getMethods()) { //pega todos os metodos do formulário
             if (mt.isAnnotationPresent(MapFrameField.class)) { //verifica se são do tipo SETTER
                 MapFrameField map = mt.getAnnotation(MapFrameField.class); //recupera referencia da anotação
                 try {
                     Method getMethod;
                     String referenceField;
+                    String subClassReference = map.subClassReference();
                     try {
-                        referenceField = map.referenceField().replaceFirst(map.referenceField().substring(0, 1), map.referenceField().substring(0, 1).toUpperCase());
+                        referenceField = map.referenceField().replaceFirst("^(\\w{1})", map.referenceField().substring(0, 1).toUpperCase());
                     } catch (Exception ex) {
                         break;
                     }
 
+                    Object ob = objetos[0];
+
+                    //começo da instrução
+                    if (objetos.length > 1 && !Objects.equals("", map.controlClassType())) {
+                        for (Object obj : objetos) {
+                            if (obj.getClass().getName().contains(map.controlClassType())) {
+                                ob = obj;
+                            }
+                        }
+                    }
                     //pega o método get do objeto de referencia
-                    if (!Objects.equals("", map.subClassReference())) {
-                        getMethod = ob.getClass().getMethod("get".concat(map.subClassReference()))
-                                .getClass().getMethod("get".concat(referenceField));
+                    if (!Objects.equals("", subClassReference)) {
+                        subClassReference = !Objects.equals("", map.subClassReference()) ? map.subClassReference().replaceFirst("^(\\w{1})", map.subClassReference().substring(0, 1).toUpperCase()) : null;
+                        getMethod = ob.getClass().getMethod("get".concat(subClassReference));
+                        ob = getMethod.invoke(ob);
+                        getMethod = ob.getClass().getMethod("get".concat(referenceField));
                     } else {
                         if (Objects.equals(Boolean.class, map.typeReference()) | Objects.equals(boolean.class, map.typeReference())) {
                             getMethod = ob.getClass().getMethod("is".concat(referenceField));
@@ -336,10 +364,12 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
                                 ab.setSelected(false);
                             }
                         }
-                    } else if(mt.getReturnType() == JTable.class){
+                    } else if (mt.getReturnType() == JTable.class) {
                         TableModelCBI model = (TableModelCBI) mt.invoke(form).getClass().getMethod("getModel").invoke(mt.invoke(form));
+                        model.deletarLista();
                         model.addLista((List<?>) getMethod.invoke(ob));
                     }
+
                 } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
                     Logger.getLogger(ListenerCBI.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -412,22 +442,38 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
      * @param botoes lista de botoes a serem manipulados
      * @return retorna se a transação foi bem sucedida
      */
-    public boolean salvar(int tipo, EntityManagerHelper emh, PERSISTENCE_UNIT persistence_unit, Object object, JFrame form, List<JPanel> paineis, List<JComponent> botoes) {
+    public boolean salvar(int tipo, EntityManagerHelper emh, PERSISTENCE_UNIT persistence_unit, JFrame form, List<JPanel> paineis, List<JComponent> botoes, Object... object) {
         switch (tipo) {
             case 0: //salvar
                 if (JOptionPane.showConfirmDialog(form, "Deseja salvar o registro?", "Salvar Registro", JOptionPane.YES_NO_OPTION) == 0) {
-                    this.setDados();
-                    emh.getOperation(EntityManagerHelper.OPERATION_TYPE.SAVE, object, persistence_unit);
+                    try {
+                        this.setDados(form, object);
+                    } catch (Exception ex) {
+                        this.setDados();
+                    }
+                    for (Object ob : object) {
+                        emh.getOperation(EntityManagerHelper.OPERATION_TYPE.SAVE, ob, persistence_unit);
+                    }
                     this.enableOrDisabelComponentsPanel(paineis, OPERACAO.SALVAR);
                     this.setEnableButtons(OPERACAO.SALVAR, botoes);
-                    //this.getDados();
+                    try {
+                        this.getDados(form, object);
+                    } catch (Exception ex) {
+                        this.getDados();
+                    }
                     return true;
                 }
                 return false;
             case 1: //alterar
                 if (JOptionPane.showConfirmDialog(form, "Deseja salvar as alterações feitas no registro?", "Salvar Registro", JOptionPane.YES_NO_OPTION) == 0) {
-                    this.setDados();
-                    emh.getOperation(EntityManagerHelper.OPERATION_TYPE.UPDATE, object, persistence_unit);
+                    try {
+                        this.setDados(form, object);
+                    } catch (Exception ex) {
+                        this.setDados();
+                    }
+                    for (Object ob : object) {
+                        emh.getOperation(EntityManagerHelper.OPERATION_TYPE.UPDATE, ob, persistence_unit);
+                    }
                     this.enableOrDisabelComponentsPanel(paineis, OPERACAO.SALVAR);
                     this.setEnableButtons(OPERACAO.SALVAR, botoes);
                     return true;
@@ -482,10 +528,10 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
      * @return Retorna um formulário de pesquisa simplificada. Será necessário
      * fazer o setVisible
      */
-    public PesquisaDefaultForm pesquisar(String titulo, TableModelCBI model, TableModelCBI modelSolicitante, ListenerCBI listenerSolicitante) {
+    public PesquisaDefaultForm pesquisar(String titulo, TableModelCBI model, TableModelCBI modelSolicitante, ListenerCBI listenerSolicitante, int... tamanho) {
         PesquisaDefaultForm pesquisa = (PesquisaDefaultForm) ControleInstancias.getInstance(PesquisaDefaultForm.class.getName());
         if (pesquisa == null) {
-            pesquisa = new PesquisaDefaultForm(titulo, model, listenerSolicitante, modelSolicitante);
+            pesquisa = new PesquisaDefaultForm(titulo, model, listenerSolicitante, modelSolicitante, tamanho);
             ControleInstancias.setControleInstancias(PesquisaDefaultForm.class.getName(), pesquisa);
         }
         return pesquisa;
@@ -630,6 +676,21 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
                         case "hora":
                             textField.setText(Datas.getHour(textField.getText(), 1));
                             break;
+                        case "valor":
+                            MaskFormatter mask = new MaskFormatter();
+                            String text = textField.getText().replace(",", ".");
+                            if (!text.contains(".")) {
+                                text = text.concat(".00");
+                            } else if (text.contains(".")) {
+                                String sufixo = text.substring(text.indexOf(".") + 1, text.length());
+                                if (sufixo.length() < 2) {
+                                    text = text.concat(sufixo.length() == 1 ? "0" : "00");
+                                } else if (sufixo.length() > 2) {
+                                    text = text.replace("." + sufixo, "." + sufixo.substring(0, 2));
+                                }
+                            }
+                            text = text.contains("R$") ? text : "R$ ".concat(text);
+                            textField.setText(text);
                     }
                 }
             }
