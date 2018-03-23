@@ -34,33 +34,33 @@ public class EntityManagerHelper {
     public void getOperation(OPERATION_TYPE operation_type, Object object, PERSISTENCE_UNIT persistence_unit) {
         EntityManager session = getSession(persistence_unit);
         try {
+            session.getTransaction().begin();
             switch (operation_type) {
                 case SAVE:
                     LOG.info("Salvando registro no banco de dados");
-                    session.getTransaction().begin();
+                    //session.getTransaction().begin();
                     session.persist(object);
                     session.getTransaction().commit();
                     JOptionPane.showMessageDialog(null, "Registro salvo com sucesso", "Registro Salvo", JOptionPane.INFORMATION_MESSAGE);
                     break;
                 case UPDATE:
                     LOG.info("Atualizando registro no banco de dados");
-                    session.getTransaction().begin();
+                    //session.getTransaction().begin();
                     session.merge(object);
                     session.getTransaction().commit();
                     JOptionPane.showMessageDialog(null, "Registro alterado com sucesso", "Registro Alterado", JOptionPane.INFORMATION_MESSAGE);
                     break;
                 case DELETE:
                     LOG.info("Deletando registro no banco de dados");
-                    session.getTransaction().begin();
+                    //session.getTransaction().begin();
                     session.remove(object);
                     session.getTransaction().commit();
                     JOptionPane.showMessageDialog(null, "Registro deletado com sucesso", "Registro Deletado", JOptionPane.INFORMATION_MESSAGE);
                     break;
             }
         } catch (Exception e) {
-            session.getTransaction().rollback();
-            this.closeSession(persistence_unit);
             e.printStackTrace();
+            session.getTransaction().rollback();
         } finally {
             this.closeSession(persistence_unit);
         }

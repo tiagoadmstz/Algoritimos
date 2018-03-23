@@ -5,6 +5,8 @@
  */
 package algoritimos.cast;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 /**
@@ -27,6 +29,8 @@ public class CastFactory {
                 } catch (Exception ex) {
                     object = object.toString();
                 }
+            } else if (Objects.equals(LocalDate.class, classe)) {
+                object = LocalDate.parse(object.toString(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
             }
             return object;
         } catch (Exception e) {
