@@ -139,7 +139,6 @@ public final class PesquisaDefaultForm extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        tbPesquisa.setAutoscrolls(false);
         scPesquisa.setViewportView(tbPesquisa);
 
         javax.swing.GroupLayout painelMainLayout = new javax.swing.GroupLayout(painelMain);
@@ -148,13 +147,13 @@ public final class PesquisaDefaultForm extends javax.swing.JFrame {
             painelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(painelMainLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(painelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(painelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(painelMainLayout.createSequentialGroup()
                         .addComponent(cbPesqusia, javax.swing.GroupLayout.PREFERRED_SIZE, 116, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtPesquisa))
-                    .addComponent(scPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 439, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(scPesquisa, javax.swing.GroupLayout.DEFAULT_SIZE, 439, Short.MAX_VALUE))
+                .addContainerGap())
         );
         painelMainLayout.setVerticalGroup(
             painelMainLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -164,8 +163,8 @@ public final class PesquisaDefaultForm extends javax.swing.JFrame {
                     .addComponent(cbPesqusia, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(scPesquisa, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(scPesquisa, javax.swing.GroupLayout.DEFAULT_SIZE, 275, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         menuBar.setPreferredSize(new java.awt.Dimension(0, 0));
@@ -253,7 +252,6 @@ public final class PesquisaDefaultForm extends javax.swing.JFrame {
 
         public void setColumnSize(int... tamanho) {
             if (tamanho != null && tamanho.length > 0) {
-                tbPesquisa.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
                 this.setColumnSize(form.getTbPesquisa(), tamanho);
             }
         }
@@ -303,8 +301,6 @@ public final class PesquisaDefaultForm extends javax.swing.JFrame {
                     modelSolicitante.addObject(model.getObject(sorter.convertRowIndexToModel(form.getTbPesquisa().getSelectedRow())));
                     form.dispose();
                 }
-            } else if (e.getClickCount() == 1) {
-                form.getCbPesqusia().setSelectedIndex(form.getTbPesquisa().getSelectedColumn());
             }
         }
 
@@ -316,6 +312,9 @@ public final class PesquisaDefaultForm extends javax.swing.JFrame {
         @Override
         public void itemStateChanged(ItemEvent e) {
             if (e.getStateChange() == ItemEvent.SELECTED || e.getStateChange() == ItemEvent.DESELECTED) {
+                if (form.getTbPesquisa().getSelectedColumn() != -1) {
+                    form.getCbPesqusia().setSelectedIndex(form.getTbPesquisa().getSelectedColumn());
+                }
                 form.getTxtPesquisa().requestFocus();
             }
         }
