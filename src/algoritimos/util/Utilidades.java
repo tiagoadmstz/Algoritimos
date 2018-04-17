@@ -158,4 +158,33 @@ public class Utilidades {
     public static void setLabelIcon(JLabel label, String path) {
         label.setIcon(new ImageIcon(path));
     }
+    
+    /**
+     * Este método é utilizado para gerar chaves criptografadas em SHA de 512
+     * bits com saída de chave hexadecimal de 160 bits utilizando SALT.
+     *
+     * @param msg - texto a ser criptografado.
+     * @param salt
+     * @return - chave hexadecimal de 160 bits.
+     */
+    public static String encriptyMsg(String msg, String salt) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-512");
+            byte messageCript[] = md.digest(msg.getBytes("UTF-8")); //RFC3548
+
+            //Técnica de SALT com HASH de senha
+            byte messageSalt[] = md.digest(Arrays.toString(messageCript).concat(salt).getBytes("UTF-8"));
+
+            //geração do hash em hexadecimal
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : messageSalt) {
+                hexString.append(String.format("%02X", 0xFF & b));
+            }
+
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException nse) {
+            nse.printStackTrace();
+        }
+        return null;
+    }
 }

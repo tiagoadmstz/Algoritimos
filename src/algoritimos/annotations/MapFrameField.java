@@ -39,10 +39,10 @@ public @interface MapFrameField {
      */
     public Class typeReference();
     /**
-     * Quando existir referencia de outro objeto dentro do bean deve-se informar o nome dessa classe sempre com a primeira letra maiuscula
+     * Quando existir referencia de outro objeto dentro do bean deve-se informar o nome do atributo que representa esta classe
      * 
-     * Exemplo: Departamento{ private Colaborador colaborador; getColadorador }
-     * subClasseReference = "Colaborador"
+     * Exemplo: Departamento{ private Colaborador colab; getColadorador }
+     * subClasseReference = "colab"
      * 
      * @return nome da subClasse
      */
