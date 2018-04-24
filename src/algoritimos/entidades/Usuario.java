@@ -31,6 +31,8 @@ import javax.persistence.Table;
 //@SequenceGenerator(name = "usuario_seq", sequenceName = "seq_usuario", initialValue = 1, allocationSize = 1)
 public class Usuario implements Serializable {
 
+    private static final long serialVersionUID = -6143251070152910169L;
+
     private Long id;
     private String nomeUsuario;
     private String usuario;
