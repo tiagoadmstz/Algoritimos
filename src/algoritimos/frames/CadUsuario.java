@@ -8,7 +8,6 @@ package algoritimos.frames;
 import algoritimos.controle.ControleUsuario;
 import algoritimos.dao.EntityManagerHelper;
 import algoritimos.entidades.Usuario;
-import algoritimos.listener.ListenerCBIAdapter;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,14 +20,14 @@ import javax.swing.JPanel;
  */
 public class CadUsuario extends javax.swing.JFrame {
 
-    private final PainelUsuarioDefaultListener listener;
+    //private final PainelUsuarioDefaultListener listener;
 
     /**
      * Creates new form CadUsuario
      */
     public CadUsuario() {
         initComponents();
-        listener = new PainelUsuarioDefaultListener(this, EntityManagerHelper.PERSISTENCE_UNIT.DERBYDB_PU);
+        //listener = new PainelUsuarioDefaultListener(this, EntityManagerHelper.DERBYDB_PU);
     }
 
     /**
@@ -40,7 +39,6 @@ public class CadUsuario extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        painelUsuarioDefault = new algoritimos.paineis.PainelUsuarioDefault();
         menuBar = new javax.swing.JMenuBar();
         menuArquivo = new javax.swing.JMenu();
         itemFechar = new javax.swing.JMenuItem();
@@ -62,13 +60,11 @@ public class CadUsuario extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(painelUsuarioDefault, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGap(0, 38, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(painelUsuarioDefault, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addGap(0, 16, Short.MAX_VALUE)
         );
 
         pack();
@@ -114,79 +110,78 @@ public class CadUsuario extends javax.swing.JFrame {
     private javax.swing.JMenuItem itemFechar;
     private javax.swing.JMenu menuArquivo;
     private javax.swing.JMenuBar menuBar;
-    private algoritimos.paineis.PainelUsuarioDefault painelUsuarioDefault;
     // End of variables declaration//GEN-END:variables
 
-    private final class PainelUsuarioDefaultListener extends ListenerCBIAdapter {
+    private final class PainelUsuarioDefaultListener {
 
-        private final CadUsuario form;
+        //private final CadUsuario form;
         private final List<JPanel> paineis = new ArrayList();
         private final List<JComponent> buttons = new ArrayList();
         private final EntityManagerHelper emh = new EntityManagerHelper();
         private final Usuario usuario = new Usuario();
-        private EntityManagerHelper.PERSISTENCE_UNIT persistence_unit;
+        private String persistence_unit;
 
-        public PainelUsuarioDefaultListener(CadUsuario form, EntityManagerHelper.PERSISTENCE_UNIT persistence_unit) {
-            this.form = form;
-            this.persistence_unit = persistence_unit;
-            attachListener();
-            carregarPaineis();
-            ControleUsuario.verificaForcaSenha(painelUsuarioDefault.getTxtSenha(), painelUsuarioDefault.getLbForca(), painelUsuarioDefault.getPbForcaSenha());
-            ControleUsuario.verificaSenhasCoinscidentes(painelUsuarioDefault.getTxtSenha(), painelUsuarioDefault.getTxtConfirmarSenha(), painelUsuarioDefault.getLbConfirmarSenha());
+        /*public PainelUsuarioDefaultListener(CadUsuario form, String persistence_unit) {
+        this.form = form;
+        this.persistence_unit = persistence_unit;
+        attachListener();
+        carregarPaineis();
+        ControleUsuario.verificaForcaSenha(painelUsuarioDefault.getTxtSenha(), painelUsuarioDefault.getLbForca(), painelUsuarioDefault.getPbForcaSenha());
+        ControleUsuario.verificaSenhasCoinscidentes(painelUsuarioDefault.getTxtSenha(), painelUsuarioDefault.getTxtConfirmarSenha(), painelUsuarioDefault.getLbConfirmarSenha());
         }
-
+        
         @Override
         public void attachListener() {
-            itemFechar.addActionListener(this);
-            painelUsuarioDefault.getBtNovo().addActionListener(this);
-            painelUsuarioDefault.getBtCancelar().addActionListener(this);
-            painelUsuarioDefault.getBtEditar().addActionListener(this);
-            painelUsuarioDefault.getBtFechar().addActionListener(this);
-            painelUsuarioDefault.getBtSalvar().addActionListener(this);
-            fecharESC(itemFechar);
+        itemFechar.addActionListener(this);
+        painelUsuarioDefault.getBtNovo().addActionListener(this);
+        painelUsuarioDefault.getBtCancelar().addActionListener(this);
+        painelUsuarioDefault.getBtEditar().addActionListener(this);
+        painelUsuarioDefault.getBtFechar().addActionListener(this);
+        painelUsuarioDefault.getBtSalvar().addActionListener(this);
+        fecharESC(itemFechar);
         }
-
+        
         @Override
         public void actionPerformed(ActionEvent e) {
-            switch (e.getActionCommand()) {
-                case "novo":
-                    novo(null, paineis, buttons);
-                    painelUsuarioDefault.getTxtNome().requestFocus();
-                    break;
-                case "cancelar":
-                    cancelar(paineis, buttons);
-                    break;
-                case "editar":
-                    editar(paineis, buttons);
-                    break;
-                case "fechar":
-                    fechar(form);
-                    break;
-                case "salvar":
-                    salvar(0, emh, persistence_unit, form, paineis, buttons, usuario);
-                    break;
-                case "alterar":
-                    salvar(1, emh, persistence_unit, form, paineis, buttons, usuario);
-                    alterar(paineis, buttons);
-                    break;
-            }
+        switch (e.getActionCommand()) {
+        case "novo":
+        novo(null, paineis, buttons);
+        painelUsuarioDefault.getTxtNome().requestFocus();
+        break;
+        case "cancelar":
+        cancelar(paineis, buttons);
+        break;
+        case "editar":
+        editar(paineis, buttons);
+        break;
+        case "fechar":
+        fechar();
+        break;
+        case "salvar":
+        salvar(0, emh, persistence_unit, form, paineis, buttons, usuario);
+        break;
+        case "alterar":
+        salvar(1, emh, persistence_unit, form, paineis, buttons, usuario);
+        alterar(paineis, buttons);
+        break;
         }
-
+        }
+        
         @Override
         public void carregarPaineis() {
-            paineis.add(painelUsuarioDefault.getPainelDados());
-            buttons.add(painelUsuarioDefault.getBtCancelar());
-            buttons.add(painelUsuarioDefault.getBtEditar());
-            buttons.add(painelUsuarioDefault.getBtFechar());
-            buttons.add(painelUsuarioDefault.getBtNovo());
-            buttons.add(painelUsuarioDefault.getBtSalvar());
+        paineis.add(painelUsuarioDefault.getPainelDados());
+        buttons.add(painelUsuarioDefault.getBtCancelar());
+        buttons.add(painelUsuarioDefault.getBtEditar());
+        buttons.add(painelUsuarioDefault.getBtFechar());
+        buttons.add(painelUsuarioDefault.getBtNovo());
+        buttons.add(painelUsuarioDefault.getBtSalvar());
         }
-
+        
         @Override
         public void setDados(Object object) {
-            usuario.clonar((Usuario) object);
+        usuario.clonar((Usuario) object);
         }
-
+        
+        }*/
     }
-
 }

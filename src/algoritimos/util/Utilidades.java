@@ -5,7 +5,6 @@
  */
 package algoritimos.util;
 
-import java.awt.Component;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -158,4 +157,5 @@ public class Utilidades {
     public static void setLabelIcon(JLabel label, String path) {
         label.setIcon(new ImageIcon(path));
     }
+    
 }

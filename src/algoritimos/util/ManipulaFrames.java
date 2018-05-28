@@ -6,7 +6,7 @@
 package algoritimos.util;
 
 import algoritimos.beans.JTextFieldCBI;
-import algoritimos.tabelas.TableModelCBI;
+import algoritimos.tabelas.TableModelDefaultAdapter;
 import java.awt.Component;
 import java.awt.Container;
 import java.util.HashMap;
@@ -193,7 +193,7 @@ public class ManipulaFrames {
                             areaTemp.setText("");
                         } else if (comp instanceof JTable) {
                             JTable tb = (JTable) comp;
-                            TableModelCBI model = (TableModelCBI) tb.getModel();
+                            TableModelDefaultAdapter model = (TableModelDefaultAdapter) tb.getModel();
                             model.deletarLista();
                         }
                     }

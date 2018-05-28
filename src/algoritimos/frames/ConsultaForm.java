@@ -5,11 +5,10 @@ package algoritimos.frames;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-import algoritimos.listener.ListenerCBI;
-import algoritimos.listener.ListenerCBIAdapter;
+import algoritimos.listener.ListenerDefaultAdapter;
 import algoritimos.regex.REGEX;
 import algoritimos.regex.RegexUtil;
-import algoritimos.tabelas.TableModelCBI;
+import algoritimos.tabelas.TableModelDefaultAdapter;
 import algoritimos.util.OPERACAO;
 import java.awt.Color;
 import java.awt.Component;
@@ -56,16 +55,16 @@ public final class ConsultaForm extends javax.swing.JFrame {
      * @param colunaPrincipal Coluna que será utilizada para os filtros por caracter inicial
      * @param tamanho Array com o tamanho de cada coluna da pesquisa
      */
-    public ConsultaForm(String legenda, TableModelCBI model, ListenerCBI listenerSolicitante, 
-            TableModelCBI modelSolicitante, ImageIcon image, int colunaPrincipal, int... tamanho) {
+    public ConsultaForm(String legenda, TableModelDefaultAdapter model, ListenerDefaultAdapter listenerSolicitante, 
+            TableModelDefaultAdapter modelSolicitante, ImageIcon image, int colunaPrincipal, int... tamanho) {
         setImageIcon(image);
         initComponents();
         listener = new ConsultaListener(this);
         this.setTitle(legenda);
-        listener.addModel(model);
+        //listener.addModel(model);
         listener.setModelSolicitante(modelSolicitante);
         listener.setListenerSolicitante(listenerSolicitante);
-        listener.setColumnSize(tamanho);
+        //listener.setColumnSize(tamanho);
         listener.setColunaPrincipal(colunaPrincipal);
     }
 
@@ -1108,12 +1107,12 @@ public final class ConsultaForm extends javax.swing.JFrame {
     private javax.swing.JTable tbPesquisa;
     private javax.swing.JTextField txtPesquisa;
     // End of variables declaration//GEN-END:variables
-public final class ConsultaListener extends ListenerCBIAdapter {
+public final class ConsultaListener {
 
         private final ConsultaForm form;
-        private TableModelCBI model = null;
-        private TableModelCBI modelSolicitante = null;
-        private ListenerCBI listenerSolicitante = null;
+        private TableModelDefaultAdapter model = null;
+        private TableModelDefaultAdapter modelSolicitante = null;
+        private ListenerDefaultAdapter listenerSolicitante = null;
         private final PesquisaRenderer renderer;
         private TableRowSorter sorter;
         private int colunaPrincipal = -1;
@@ -1121,7 +1120,7 @@ public final class ConsultaListener extends ListenerCBIAdapter {
         public ConsultaListener(ConsultaForm form) {
             this.form = form;
             renderer = new PesquisaRenderer();
-            attachListener();
+            //attachListener();
             form.getTxtPesquisa().requestFocus();
         }
 
@@ -1131,7 +1130,7 @@ public final class ConsultaListener extends ListenerCBIAdapter {
          *
          * @param modelSolicitante modelo da tabela solicitante
          */
-        public void setModelSolicitante(TableModelCBI modelSolicitante) {
+        public void setModelSolicitante(TableModelDefaultAdapter modelSolicitante) {
             this.modelSolicitante = modelSolicitante;
         }
 
@@ -1141,7 +1140,7 @@ public final class ConsultaListener extends ListenerCBIAdapter {
          *
          * @param listenerSolicitante listener do formulário solicitante
          */
-        public void setListenerSolicitante(ListenerCBI listenerSolicitante) {
+        public void setListenerSolicitante(ListenerDefaultAdapter listenerSolicitante) {
             this.listenerSolicitante = listenerSolicitante;
         }
 
@@ -1155,83 +1154,82 @@ public final class ConsultaListener extends ListenerCBIAdapter {
             renderer.setColumnLink(column);
         }
 
-        @Override
+        /*@Override
         public void actionPerformed(ActionEvent e) {
-            switch (e.getActionCommand()) {
-                case "fechar":
-                    fechar(form);
-                    break;
-                case "letra":
-                    JButton bt = (JButton) e.getSource();
-                    if (!"...".equals(bt.getText()) && colunaPrincipal != -1) {
-                        sorter.setRowFilter(RowFilter.regexFilter(RegexUtil.getRegex(REGEX.COMECACOM, bt.getText()), colunaPrincipal));
-                    } else if ("...".equals(bt.getText())) {
-                        sorter.setRowFilter(null);
-                    }
-                    form.getTxtPesquisa().requestFocus();
-            }
+        switch (e.getActionCommand()) {
+        case "fechar":
+        fechar();
+        break;
+        case "letra":
+        JButton bt = (JButton) e.getSource();
+        if (!"...".equals(bt.getText()) && colunaPrincipal != -1) {
+        sorter.setRowFilter(RowFilter.regexFilter(RegexUtil.getRegex(REGEX.COMECACOM, bt.getText()), colunaPrincipal));
+        } else if ("...".equals(bt.getText())) {
+        sorter.setRowFilter(null);
         }
-
-        @Override
+        form.getTxtPesquisa().requestFocus();
+        }
+        }*/
+        /*@Override
         public void attachListener() {
-            for (Component bt : form.getPainelBotoes().getComponents()) {
-                JButton b = (JButton) bt;
-                b.addActionListener(this);
-                b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-            }
-            form.getBtPesquisa().addActionListener(this);
-            form.getCbPesquisa().addItemListener(this);
-            form.getTbPesquisa().addMouseListener(this);
-            form.getTxtPesquisa().addKeyListener(this);
-            form.getItemFechar().addActionListener(this);
-            fecharESC(form.getItemFechar());
+        for (Component bt : form.getPainelBotoes().getComponents()) {
+        JButton b = (JButton) bt;
+        b.addActionListener(this);
+        b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         }
-
+        form.getBtPesquisa().addActionListener(this);
+        form.getCbPesquisa().addItemListener(this);
+        form.getTbPesquisa().addMouseListener(this);
+        form.getTxtPesquisa().addKeyListener(this);
+        form.getItemFechar().addActionListener(this);
+        fecharESC(form.getItemFechar());
+        }
+        
         public void setColumnSize(int... tamanho) {
-            if (tamanho != null && tamanho.length > 0) {
-                this.setColumnSize(form.getTbPesquisa(), tamanho);
-            }
+        if (tamanho != null && tamanho.length > 0) {
+        this.setColumnSize(form.getTbPesquisa(), tamanho);
         }
-
-        public void addModel(TableModelCBI model) {
-            this.model = model;
-            form.getTbPesquisa().setModel(model);
-            sorter = new TableRowSorter(model);
-            setColumnFilter(tbPesquisa, sorter);
-            form.getTbPesquisa().setRowSorter(sorter);
-            for (int i = 0; i < model.getColumnCount(); i++) {
-                form.getCbPesquisa().addItem(model.getColumnName(i));
-            }
-            setColumnDesign(tbPesquisa, renderer);
         }
-
+        
+        public void addModel(TableModelDefaultAdapter model) {
+        this.model = model;
+        form.getTbPesquisa().setModel(model);
+        sorter = new TableRowSorter(model);
+        setColumnFilter(tbPesquisa, sorter);
+        form.getTbPesquisa().setRowSorter(sorter);
+        for (int i = 0; i < model.getColumnCount(); i++) {
+        form.getCbPesquisa().addItem(model.getColumnName(i));
+        }
+        setColumnDesign(tbPesquisa, renderer);
+        }
+        
         @Override
         public void mouseClicked(MouseEvent e) {
-            if (e.getClickCount() == 2) {
-                if (listenerSolicitante != null) {
-                    listenerSolicitante.setDados(model.getObject(sorter.convertRowIndexToModel(form.getTbPesquisa().getSelectedRow())));
-                    listenerSolicitante.getDados();
-                    listenerSolicitante.setEnableButtons(OPERACAO.SALVAR);
-                }
-
-                if (modelSolicitante != null) {
-                    modelSolicitante.addObject(model.getObject(sorter.convertRowIndexToModel(form.getTbPesquisa().getSelectedRow())));
-                }
-            }
-            form.getTxtPesquisa().requestFocus();
+        if (e.getClickCount() == 2) {
+        if (listenerSolicitante != null) {
+        //listenerSolicitante.setDados(model.getObject(sorter.convertRowIndexToModel(form.getTbPesquisa().getSelectedRow())));
+        //listenerSolicitante.getDados();
+        //listenerSolicitante.setEnableButtons(OPERACAO.SALVAR);
         }
-
+        
+        if (modelSolicitante != null) {
+        modelSolicitante.addObject(model.getObject(sorter.convertRowIndexToModel(form.getTbPesquisa().getSelectedRow())));
+        }
+        }
+        form.getTxtPesquisa().requestFocus();
+        }
+        
         @Override
         public void caretUpdate(CaretEvent e) {
-            sorter.setRowFilter(RowFilter.regexFilter(RegexUtil.getRegex(REGEX.CONTEM, form.getTxtPesquisa().getText()), form.getCbPesquisa().getSelectedIndex()));
+        sorter.setRowFilter(RowFilter.regexFilter(RegexUtil.getRegex(REGEX.CONTEM, form.getTxtPesquisa().getText()), form.getCbPesquisa().getSelectedIndex()));
         }
-
+        
         @Override
         public void itemStateChanged(ItemEvent e) {
-            if (e.getStateChange() == ItemEvent.SELECTED || e.getStateChange() == ItemEvent.DESELECTED) {
-                form.getTxtPesquisa().requestFocus();
-            }
+        if (e.getStateChange() == ItemEvent.SELECTED || e.getStateChange() == ItemEvent.DESELECTED) {
+        form.getTxtPesquisa().requestFocus();
         }
+        }*/
 
         private class PesquisaRenderer extends DefaultTableCellRenderer {
 

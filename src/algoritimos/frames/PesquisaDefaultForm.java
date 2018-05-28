@@ -5,16 +5,14 @@
  */
 package algoritimos.frames;
 
-import algoritimos.listener.ListenerCBI;
-import algoritimos.listener.ListenerCBIAdapter;
+import algoritimos.listener.ListenerDefaultAdapter;
 import algoritimos.regex.REGEX;
 import algoritimos.regex.RegexUtil;
-import algoritimos.tabelas.TableModelCBI;
+import algoritimos.tabelas.TableModelDefaultAdapter;
 import algoritimos.util.OPERACAO;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
-import java.awt.event.ItemEvent;
 import java.awt.event.MouseEvent;
 import javax.swing.JComboBox;
 import javax.swing.JMenuItem;
@@ -30,7 +28,8 @@ import javax.swing.table.TableRowSorter;
  * @author Tiago
  */
 public final class PesquisaDefaultForm extends javax.swing.JFrame {
-
+    
+    private static final long serialVersionUID = -5057058799733916854L;
     private final PesquisaDefaultListener listener;
 
     /**
@@ -45,7 +44,7 @@ public final class PesquisaDefaultForm extends javax.swing.JFrame {
      * dados em outra tabela
      * @param tamanho Array com o tamanho de cada coluna da pesquisa
      */
-    public PesquisaDefaultForm(String legenda, TableModelCBI model, ListenerCBI listenerSolicitante, TableModelCBI modelSolicitante, int... tamanho) {
+    public PesquisaDefaultForm(String legenda, TableModelDefaultAdapter model, ListenerDefaultAdapter listenerSolicitante, TableModelDefaultAdapter modelSolicitante, int... tamanho) {
         initComponents();
         listener = new PesquisaDefaultListener(this);
         this.setLegenda(legenda);
@@ -55,11 +54,11 @@ public final class PesquisaDefaultForm extends javax.swing.JFrame {
         this.setColumnSize(tamanho);
     }
 
-    public void setTableModel(TableModelCBI tableModel) {
+    public void setTableModel(TableModelDefaultAdapter tableModel) {
         listener.addModel(tableModel);
     }
 
-    public void setTableModelSolicitante(TableModelCBI tableModelSolicitante) {
+    public void setTableModelSolicitante(TableModelDefaultAdapter tableModelSolicitante) {
         listener.setModelSolicitante(tableModelSolicitante);
     }
 
@@ -67,7 +66,7 @@ public final class PesquisaDefaultForm extends javax.swing.JFrame {
         listener.setColumnSize(tamanho);
     }
 
-    public void setListenerSolicitante(ListenerCBI listenerSolicitante) {
+    public void setListenerSolicitante(ListenerDefaultAdapter listenerSolicitante) {
         listener.setListenerSolicitante(listenerSolicitante);
     }
 
@@ -204,17 +203,22 @@ public final class PesquisaDefaultForm extends javax.swing.JFrame {
     private javax.swing.JTextField txtPesquisa;
     // End of variables declaration//GEN-END:variables
 
-    private final class PesquisaDefaultListener extends ListenerCBIAdapter {
-
-        private final PesquisaDefaultForm form;
-        private TableModelCBI model = null;
-        private TableModelCBI modelSolicitante = null;
-        private ListenerCBI listenerSolicitante = null;
-        private final PesquisaRenderer renderer;
+    private final class PesquisaDefaultListener extends ListenerDefaultAdapter<PesquisaDefaultForm> {
+        
+        private static final long serialVersionUID = -4393902627321619717L;
+        private TableModelDefaultAdapter model = null;
+        private TableModelDefaultAdapter modelSolicitante = null;
+        private ListenerDefaultAdapter listenerSolicitante = null;
+        private PesquisaRenderer renderer;
         private TableRowSorter sorter;
 
         public PesquisaDefaultListener(PesquisaDefaultForm form) {
-            this.form = form;
+            super(form);
+            initComponents();
+        }
+
+        @Override
+        protected void initComponents() {
             renderer = new PesquisaRenderer();
             form.getTxtPesquisa().requestFocus();
             attachListener();
@@ -233,12 +237,12 @@ public final class PesquisaDefaultForm extends javax.swing.JFrame {
         public void actionPerformed(ActionEvent e) {
             switch (e.getActionCommand()) {
                 case "fechar":
-                    fechar(form);
+                    fechar();
                     break;
             }
         }
 
-        public void addModel(TableModelCBI model) {
+        public void addModel(TableModelDefaultAdapter model) {
             this.model = model;
             form.getTbPesquisa().setModel(model);
             sorter = new TableRowSorter(model);
@@ -262,7 +266,7 @@ public final class PesquisaDefaultForm extends javax.swing.JFrame {
          *
          * @param modelSolicitante modelo da tabela solicitante
          */
-        public void setModelSolicitante(TableModelCBI modelSolicitante) {
+        public void setModelSolicitante(TableModelDefaultAdapter modelSolicitante) {
             this.modelSolicitante = modelSolicitante;
         }
 
@@ -272,7 +276,7 @@ public final class PesquisaDefaultForm extends javax.swing.JFrame {
          *
          * @param listenerSolicitante listener do formulário solicitante
          */
-        public void setListenerSolicitante(ListenerCBI listenerSolicitante) {
+        public void setListenerSolicitante(ListenerDefaultAdapter listenerSolicitante) {
             this.listenerSolicitante = listenerSolicitante;
         }
 
@@ -302,6 +306,10 @@ public final class PesquisaDefaultForm extends javax.swing.JFrame {
                     form.dispose();
                 }
             }
+
+            if (e.getClickCount() == 1) {
+                cbPesqusia.setSelectedIndex(form.getTbPesquisa().getSelectedColumn());
+            }
         }
 
         @Override
@@ -309,18 +317,9 @@ public final class PesquisaDefaultForm extends javax.swing.JFrame {
             sorter.setRowFilter(RowFilter.regexFilter(RegexUtil.getRegex(REGEX.CONTEM, form.getTxtPesquisa().getText()), form.getCbPesqusia().getSelectedIndex()));
         }
 
-        @Override
-        public void itemStateChanged(ItemEvent e) {
-            if (e.getStateChange() == ItemEvent.SELECTED || e.getStateChange() == ItemEvent.DESELECTED) {
-                if (form.getTbPesquisa().getSelectedColumn() != -1) {
-                    form.getCbPesqusia().setSelectedIndex(form.getTbPesquisa().getSelectedColumn());
-                }
-                form.getTxtPesquisa().requestFocus();
-            }
-        }
-
         private class PesquisaRenderer extends DefaultTableCellRenderer {
-
+            
+            private static final long serialVersionUID = -1500716505610837620L;
             private final Color gray = new Color(225, 225, 225);
             private final Color white = new Color(255, 255, 255);
             private int column = 0;

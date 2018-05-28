@@ -5,10 +5,9 @@ package algoritimos.controle;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
-
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JFrame;
@@ -31,27 +30,37 @@ public class ControleInstancias {
     }
 
     public static Object getInstance(String nome) {
-        return INSTANCIAS.get(nome);
+        //return INSTANCIAS.get(nome);
+        Object ob = INSTANCIAS.get(nome);
+        if(ob == null){
+            try{
+                ob = createObject(Class.forName(nome));
+                setControleInstancias(nome, ob);
+            } catch (Exception ex){
+                return ob;
+            }
+        }
+        return ob;
     }
 
     public static void removeInstance(String nome) {
         INSTANCIAS.remove(nome);
     }
 
-    public static void logout(JFrame loginFrame){
+    public static void logout(JFrame loginFrame) {
         clear();
         setControleInstancias(loginFrame.getClass().getName(), loginFrame);
         loginFrame.setVisible(true);
     }
-    
-    private static void clear(){        
-        INSTANCIAS.values().forEach(ob ->{
+
+    private static void clear() {
+        INSTANCIAS.values().forEach(ob -> {
             JFrame frame = (JFrame) ob;
             frame.dispose();
         });
         INSTANCIAS.clear();
     }
-    
+
     private static class WindowCloseListener extends WindowAdapter {
 
         public WindowCloseListener() {
@@ -64,6 +73,15 @@ public class ControleInstancias {
                 removeInstance(e.getSource().getClass().getName());
             }
         }
+    }
+
+    private static Object createObject(Class<?> classe) throws Exception {
+            for (Constructor construtor : classe.getConstructors()) {
+                if(construtor.getParameterCount() == 0){
+                    return construtor.newInstance();
+                }
+            }
+            return null;
     }
 
 }

@@ -11,13 +11,12 @@ import algoritimos.calculos.Datas;
 import algoritimos.cast.CastFactory;
 import algoritimos.controle.ControleInstancias;
 import algoritimos.dao.EntityManagerHelper;
-import algoritimos.dao.EntityManagerHelper.PERSISTENCE_UNIT;
-import algoritimos.dao.JPAHelper;
 import algoritimos.frames.ConsultaForm;
 import algoritimos.frames.PesquisaDefaultForm;
 import algoritimos.tabelas.DefaultCBIHeaderRenderer;
-import algoritimos.tabelas.TableModelCBI;
+import algoritimos.tabelas.TableModelDefaultAdapter;
 import algoritimos.util.ManipulaFrames;
+import algoritimos.util.MessageFactory;
 import algoritimos.util.OPERACAO;
 import algoritimos.util.ScrollPaneUtil;
 import java.awt.Component;
@@ -33,6 +32,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Enumeration;
@@ -55,6 +55,7 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -65,12 +66,31 @@ import javax.swing.text.MaskFormatter;
 /**
  *
  * @author Tiago D. Teixeira
+ * @param <T>
  */
-public abstract class ListenerCBI implements ActionListener, ListSelectionListener,
+public abstract class ListenerDefaultAdapter<T> implements Serializable, ActionListener, ListSelectionListener,
         KeyListener, MouseListener, FocusListener, ItemListener, WindowListener, CaretListener {
+    
+    private static final long serialVersionUID = -7885949837839388251L;
+    protected final T form;
 
-    public ListenerCBI() {
+    public ListenerDefaultAdapter(T form) {
+        this.form = form;
+    }
 
+    protected abstract void initComponents();
+
+    protected abstract void attachListener();
+
+    protected void addModel() {
+    }
+
+    protected void carregarPaineis() {
+    }
+
+    protected void carregarListas(){}
+
+    public void setEnableButtons(OPERACAO codFunction) {
     }
 
     @Override
@@ -99,27 +119,17 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
         //form.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
 
-    @Override
-    public void valueChanged(ListSelectionEvent e) {
-
+    //métodos de manipulação de frames
+    protected void novo() {
     }
 
-    @Override
-    public void keyTyped(KeyEvent e) {
-
+    protected void cancelar() {
     }
 
-    @Override
-    public void keyPressed(KeyEvent e) {
-        switch (e.getKeyCode()) {
-            case KeyEvent.VK_ENTER:
-                break;
-        }
+    protected void imprimir() {
     }
 
-    @Override
-    public void keyReleased(KeyEvent e) {
-
+    protected void pesquisar() {
     }
 
     /**
@@ -127,7 +137,7 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
      * @param jPanel lista de paines que serão manipulados pelo método
      * @param buttons iista de botões que serão manipulados pelo método
      */
-    public void novo(JTextField textField, List<JPanel> jPanel, List<JComponent> buttons) {
+    protected void novo(JTextField textField, List<JPanel> jPanel, List<JComponent> buttons) {
         if (textField != null) {
             textField.setText("");
         }
@@ -135,83 +145,35 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
         this.setEnableButtons(OPERACAO.NOVO, buttons);
     }
 
-    public void enableOrDisabelComponentsPanel(List<JPanel> jPanel, OPERACAO operation) {
-        jPanel.stream().forEach((jp) -> {
-            ManipulaFrames.enableDisableComponentJFrame(operation, jp.getComponents());
-        });
-    }
-
-    private void apagarDadosPaineis(List<JPanel> jPanel) {
-        jPanel.stream().forEach((jp) -> {
-            for (Component cpt : jp.getComponents()) {
-                if (cpt instanceof JTextField) {
-                    JTextField txt = (JTextField) cpt;
-                    txt.setText("");
-                } else if (cpt instanceof JScrollPane) {
-                    JScrollPane scp = (JScrollPane) cpt;
-                    for (Component s : scp.getViewport().getComponents()) {
-                        if (s instanceof JTable) {
-                            JTable tb = (JTable) s;
-                            TableModelCBI model = (TableModelCBI) tb.getModel();
-                            model.deletarLista();
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    public void cancelar(List<JPanel> jPanel, List<JComponent> buttons) {
+    protected void cancelar(List<JPanel> jPanel, List<JComponent> buttons) {
         //this.apagarDadosPaineis(jPanel);
         this.enableOrDisabelComponentsPanel(jPanel, OPERACAO.CANCELAR);
         this.setEnableButtons(OPERACAO.CANCELAR, buttons);
     }
 
-    public void editar(List<JPanel> jPanel, List<JComponent> buttons) {
-        this.enableOrDisabelComponentsPanel(jPanel, OPERACAO.EDITAR);
-        this.setEnableButtons(OPERACAO.EDITAR, buttons);
-    }
-
-    public void fechar(JFrame jFrame) {
-        if ((JOptionPane.showConfirmDialog(jFrame, "Deseja realmente fechar o formulário?", "Fechar Formulário", JOptionPane.YES_NO_OPTION)) == 0) {
-            jFrame.dispose();
+    protected void fechar() {
+        JFrame frame = (JFrame) form;
+        if (MessageFactory.getMsgApp(MessageFactory.FECHAR_FRAME, frame)) {
+            frame.dispose();
         }
     }
 
-    public void fecharSistema(JFrame jFrame) {
-        if ((JOptionPane.showConfirmDialog(jFrame, "Deseja realmente encerrar o sistema?", "Encerrar Sistema", JOptionPane.YES_NO_OPTION)) == 0) {
+    protected void fecharSistema() {
+        JFrame frame = (JFrame) form;
+        if (MessageFactory.getMsgApp(MessageFactory.FECHAR_SISTEMA, frame)) {
             System.exit(0);
         }
     }
 
-    public void fecharESC(JMenuItem menuItem) {
+    protected void fecharESC(JMenuItem menuItem) {
         KeyStroke escape = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
         menuItem.setAccelerator(escape);
     }
 
-    public abstract void attachListener();
-
-    public abstract JPAHelper getJPAHelper();
-
-    public abstract void addModel();
-
-    public abstract void carregarListeners();
-
-    public abstract void carregarPaineis();
-
-    /**
-     * Pega um objeto enviado de outro formulário e inclui no objeto local
-     *
-     * @param object = Entidade controlada pelo painel
-     */
-    public abstract void setDados(Object object);
-
-    /**
-     * Pega os dados do formulário e coloca no modelo de objeto EX:
-     * produto.setQuantidade(form.getTxtQuantidade.getText());
-     */
-    public abstract void setDados();
-
+    public void setDados(Object object){}
+    public void setDados(){}
+    public void getDados(){}
+    
     /**
      * Este método utiliza recursos de refletion com annotations para recuperar
      * dados dos formulários dinâmicamente
@@ -219,7 +181,7 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
      * @param form Formulário que será trabalhado
      * @param objetos Objeto que é representado pelo formulário
      */
-    public void setDados(JFrame form, Object... objetos) {
+    protected void setDados(JFrame form, Object... objetos) {
         for (Method mt : form.getClass().getMethods()) { //pega todos os metodos do formulário
             if (mt.isAnnotationPresent(MapFrameField.class)) { //verifica se são do tipo MapFrameFields
                 MapFrameField map = mt.getAnnotation(MapFrameField.class); //recupera referencia da anotação
@@ -281,23 +243,17 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
                             }
                         }
                     } else if (mt.getReturnType() == JTable.class) {
-                        TableModelCBI model = (TableModelCBI) mt.invoke(form).getClass().getMethod("getModel").invoke(mt.invoke(form));
+                        TableModelDefaultAdapter model = (TableModelDefaultAdapter) mt.invoke(form).getClass().getMethod("getModel").invoke(mt.invoke(form));
                         setMethod.invoke(ob, model.clonar());
                     }
 
                     //fim da instrução
                 } catch (NullPointerException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
-                    Logger.getLogger(ListenerCBI.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(ListenerDefaultAdapter.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
     }
-
-    /**
-     * Pega os dados de um objeto e mostra nos campos do formulário EX:
-     * form.getTxtQuantidade().setText(produto.getQuantidade());
-     */
-    public abstract void getDados();
 
     /**
      * Este método popula o formulário de forma dinamica utilizando recursos de
@@ -306,7 +262,7 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
      * @param form Formulário que será trabalhado
      * @param objetos Objeto representado pelo formulário
      */
-    public void getDados(JFrame form, Object... objetos) {
+    protected void getDados(JFrame form, Object... objetos) {
         for (Method mt : form.getClass().getMethods()) { //pega todos os metodos do formulário
             if (mt.isAnnotationPresent(MapFrameField.class)) { //verifica se são do tipo SETTER
                 MapFrameField map = mt.getAnnotation(MapFrameField.class); //recupera referencia da anotação
@@ -365,68 +321,63 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
                             }
                         }
                     } else if (mt.getReturnType() == JTable.class) {
-                        TableModelCBI model = (TableModelCBI) mt.invoke(form).getClass().getMethod("getModel").invoke(mt.invoke(form));
+                        TableModelDefaultAdapter model = (TableModelDefaultAdapter) mt.invoke(form).getClass().getMethod("getModel").invoke(mt.invoke(form));
                         model.deletarLista();
                         model.addLista((List<?>) getMethod.invoke(ob));
                     }
 
                 } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
-                    Logger.getLogger(ListenerCBI.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(ListenerDefaultAdapter.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
     }
 
-    public abstract void setMaxLegthTextFields();
+    protected void setEnableButtons(OPERACAO codigoOperacao, List<JComponent> componentes) {
+        ManipulaFrames.operacaoEnableOrder(codigoOperacao, componentes);
+    }
 
-    public abstract void setEnableButtons(OPERACAO codFunction);
+    protected void setScrollPanelConfig(JScrollPane scrollPane) {
+        ScrollPaneUtil.scrollPanelConfigurator(scrollPane);
+    }
 
-    public abstract void salvar(int tipo);
+    protected void enableOrDisabelComponentsPanel(List<JPanel> jPanel, OPERACAO operation) {
+        jPanel.stream().forEach((jp) -> {
+            ManipulaFrames.enableDisableComponentJFrame(operation, jp.getComponents());
+        });
+    }
 
-    /**
-     * Salva um registro e faz operações básicas de controle, atualizar o
-     * formulário ou tabelas fica por conta do solicitante.
-     *
-     * @param tipo 0 = salvar, 1 = alterar
-     * @param jpaHelper uma instância de JPAHelper
-     * @param object o objeto a ser salvo na base de dados
-     * @param form o formulário que solicitou a ação
-     * @param paineis lista de paineis a serem manipulados
-     * @param botoes lista de botoes a serem manipulados
-     * @return retorna se a transação foi bem sucedida
-     */
-    public boolean salvar(int tipo, JPAHelper jpaHelper, Object object, JFrame form, List<JPanel> paineis, List<JComponent> botoes) {
-        switch (tipo) {
-            case 0: //salvar
-                if (JOptionPane.showConfirmDialog(form, "Deseja salvar o registro?", "Salvar Registro", JOptionPane.YES_NO_OPTION) == 0) {
-                    this.setDados();
-                    jpaHelper.getOperation(jpaHelper.INSERT, object);
-                    this.enableOrDisabelComponentsPanel(paineis, OPERACAO.SALVAR);
-                    this.setEnableButtons(OPERACAO.SALVAR, botoes);
-                    this.getDados();
-                    return true;
+    protected void apagarDadosPaineis(List<JPanel> jPanel) {
+        jPanel.stream().forEach((jp) -> {
+            for (Component cpt : jp.getComponents()) {
+                if (cpt instanceof JTextField) {
+                    JTextField txt = (JTextField) cpt;
+                    txt.setText("");
+                } else if (cpt instanceof JScrollPane) {
+                    JScrollPane scp = (JScrollPane) cpt;
+                    for (Component s : scp.getViewport().getComponents()) {
+                        if (s instanceof JTable) {
+                            JTable tb = (JTable) s;
+                            TableModelDefaultAdapter model = (TableModelDefaultAdapter) tb.getModel();
+                            model.deletarLista();
+                        }
+                    }
                 }
-                return false;
-            case 1: //alterar
-                if (JOptionPane.showConfirmDialog(form, "Deseja salvar as alterações feitas no registro?", "Salvar Registro", JOptionPane.YES_NO_OPTION) == 0) {
-                    this.setDados();
-                    jpaHelper.getOperation(jpaHelper.UPDATE, object);
-                    this.enableOrDisabelComponentsPanel(paineis, OPERACAO.SALVAR);
-                    this.setEnableButtons(OPERACAO.SALVAR, botoes);
-                    return true;
-                }
-                return false;
-            case 3: //save or update
-                if (JOptionPane.showConfirmDialog(form, "Deseja salvar as alterações feitas no registro?", "Salvar Registro", JOptionPane.YES_NO_OPTION) == 0) {
-                    this.setDados();
-                    jpaHelper.getOperation(jpaHelper.SAVEORUPDATE, object);
-                    this.enableOrDisabelComponentsPanel(paineis, OPERACAO.SALVAR);
-                    this.setEnableButtons(OPERACAO.SALVAR, botoes);
-                    return true;
-                }
-                return false;
-        }
-        return false;
+            }
+        });
+    }
+
+    //métodos para persistencia de objetos
+    protected void salvar() {
+    }
+
+    protected void deletar() {
+    }
+
+    protected void alterar() {
+    }
+
+    protected void editar() {
     }
 
     /**
@@ -442,24 +393,24 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
      * @param botoes lista de botoes a serem manipulados
      * @return retorna se a transação foi bem sucedida
      */
-    public boolean salvar(int tipo, EntityManagerHelper emh, PERSISTENCE_UNIT persistence_unit, JFrame form, List<JPanel> paineis, List<JComponent> botoes, Object... object) {
+    protected boolean salvar(int tipo, EntityManagerHelper emh, String persistence_unit, JFrame form, List<JPanel> paineis, List<JComponent> botoes, Object... object) {
         switch (tipo) {
             case 0: //salvar
                 if (JOptionPane.showConfirmDialog(form, "Deseja salvar o registro?", "Salvar Registro", JOptionPane.YES_NO_OPTION) == 0) {
                     try {
                         this.setDados(form, object);
                     } catch (Exception ex) {
-                        this.setDados();
+                        //this.setDados();
                     }
                     for (Object ob : object) {
-                        emh.getOperation(EntityManagerHelper.OPERATION_TYPE.SAVE, ob, persistence_unit);
+                        emh.getOperation(EntityManagerHelper.SAVE, ob, persistence_unit);
                     }
                     this.enableOrDisabelComponentsPanel(paineis, OPERACAO.SALVAR);
                     this.setEnableButtons(OPERACAO.SALVAR, botoes);
                     try {
                         this.getDados(form, object);
                     } catch (Exception ex) {
-                        this.getDados();
+                        //this.getDados();
                     }
                     return true;
                 }
@@ -469,10 +420,10 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
                     try {
                         this.setDados(form, object);
                     } catch (Exception ex) {
-                        this.setDados();
+                        //this.setDados();
                     }
                     for (Object ob : object) {
-                        emh.getOperation(EntityManagerHelper.OPERATION_TYPE.UPDATE, ob, persistence_unit);
+                        emh.getOperation(EntityManagerHelper.UPDATE, ob, persistence_unit);
                     }
                     this.enableOrDisabelComponentsPanel(paineis, OPERACAO.SALVAR);
                     this.setEnableButtons(OPERACAO.SALVAR, botoes);
@@ -483,8 +434,6 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
         return false;
     }
 
-    public abstract void alterar();
-
     /**
      * Este método faz a manipulação do formulário e botões apenas, caso precise
      * fazer mais coisas sobreescreva o método alterar() e utilize este como
@@ -493,25 +442,24 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
      * @param paineis lista de painéis
      * @param botoes lista de botões
      */
-    public void alterar(List<JPanel> paineis, List<JComponent> botoes) {
+    protected void alterar(List<JPanel> paineis, List<JComponent> botoes) {
         this.enableOrDisabelComponentsPanel(paineis, OPERACAO.SALVAR);
         this.setEnableButtons(OPERACAO.SALVAR, botoes);
     }
 
-    public abstract void editar();
+    protected void editar(List<JPanel> jPanel, List<JComponent> buttons) {
+        this.enableOrDisabelComponentsPanel(jPanel, OPERACAO.EDITAR);
+        this.setEnableButtons(OPERACAO.EDITAR, buttons);
+    }
 
-    public abstract void imprimir();
-
-    public abstract void pesquisar();
-
-    public ConsultaForm pesquisar(ListenerCBI listenerSolicitante) {
+    protected ConsultaForm pesquisar(ListenerDefaultAdapter listenerSolicitante) {
         /*ConsultaForm consulta = (ConsultaForm) ControleInstancias.getInstance(ConsultaForm.class.getName());
-        if (consulta == null) {
-        consulta = new ConsultaForm();
-        ControleInstancias.setControleInstancias(ConsultaForm.class.getName(), consulta);
-        }
-        consulta.setListenerSolicitante(listenerSolicitante);
-        return consulta;*/
+         if (consulta == null) {
+         consulta = new ConsultaForm();
+         ControleInstancias.setControleInstancias(ConsultaForm.class.getName(), consulta);
+         }
+         consulta.setListenerSolicitante(listenerSolicitante);
+         return consulta;*/
         return null;
     }
 
@@ -528,7 +476,7 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
      * @return Retorna um formulário de pesquisa simplificada. Será necessário
      * fazer o setVisible
      */
-    public PesquisaDefaultForm pesquisar(String titulo, TableModelCBI model, TableModelCBI modelSolicitante, ListenerCBI listenerSolicitante, int... tamanho) {
+    protected PesquisaDefaultForm pesquisar(String titulo, TableModelDefaultAdapter model, TableModelDefaultAdapter modelSolicitante, ListenerDefaultAdapter listenerSolicitante, int... tamanho) {
         PesquisaDefaultForm pesquisa = (PesquisaDefaultForm) ControleInstancias.getInstance(PesquisaDefaultForm.class.getName());
         if (pesquisa == null) {
             pesquisa = new PesquisaDefaultForm(titulo, model, listenerSolicitante, modelSolicitante, tamanho);
@@ -536,8 +484,6 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
         }
         return pesquisa;
     }
-
-    public abstract void deletar();
 
     /**
      * Está é um método básico para deletar registros simples e fazer a
@@ -551,51 +497,19 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
      * @param botoes lista de botoes
      * @return
      */
-    public boolean deletar(Object object, JFrame form, JPAHelper jpaHelper, List<JPanel> paineis, List<JComponent> botoes) {
+    protected boolean deletar(Object object, JFrame form, EntityManagerHelper emh, String persistence_unit, List<JPanel> paineis, List<JComponent> botoes) {
         if (JOptionPane.showConfirmDialog(form, "Deseja deletar o registro?", "Salvar Registro", JOptionPane.YES_NO_OPTION) == 0) {
-            this.setDados();
-            jpaHelper.getOperation(jpaHelper.DELETE, object);
+            //this.setDados();
+            emh.getOperation(EntityManagerHelper.DELETE, object, persistence_unit);
             enableOrDisabelComponentsPanel(paineis, OPERACAO.CANCELAR);
             setEnableButtons(OPERACAO.CANCELAR, botoes);
             return true;
         }
         return false;
     }
-
-    public boolean deletar(Object object, JFrame form, EntityManagerHelper emh, PERSISTENCE_UNIT persistence_unit, List<JPanel> paineis, List<JComponent> botoes) {
-        if (JOptionPane.showConfirmDialog(form, "Deseja deletar o registro?", "Salvar Registro", JOptionPane.YES_NO_OPTION) == 0) {
-            this.setDados();
-            emh.getOperation(EntityManagerHelper.OPERATION_TYPE.DELETE, object, persistence_unit);
-            enableOrDisabelComponentsPanel(paineis, OPERACAO.CANCELAR);
-            setEnableButtons(OPERACAO.CANCELAR, botoes);
-            return true;
-        }
-        return false;
-    }
-
-    public void setEnableButtons(OPERACAO codigoOperacao, List<JComponent> componentes) {
-        ManipulaFrames.operacaoEnableOrder(codigoOperacao, componentes);
-    }
-
-    public void setScrollPanelConfig(JScrollPane scrollPane) {
-        ScrollPaneUtil.scrollPanelConfigurator(scrollPane);
-    }
-
-    public void addItens(String tipo) {
-
-    }
-
-    public void removeItens(String tipo) {
-
-    }
-
-    public abstract void carregarListas();
-
-    public void apagarTabelas() {
-
-    }
-
-    public void setColumnDesign(JTable table, DefaultTableCellRenderer tableRenderer) {
+    
+    //métodos de Table Model
+    protected void setColumnDesign(JTable table, DefaultTableCellRenderer tableRenderer) {
         //rederização das colunas
         for (int i = 0; i < table.getColumnCount(); i++) {
             if (table.getColumnClass(i) != Boolean.class) {
@@ -604,7 +518,7 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
         }
     }
 
-    public void setColumnFilter(JTable table, TableRowSorter rowSorter) {
+    protected void setColumnFilter(JTable table, TableRowSorter rowSorter) {
         int columns = table.getModel().getColumnCount();
         for (int i = 0; i < columns; i++) {
             rowSorter.setSortable(i, false);
@@ -612,41 +526,18 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
         }
     }
 
-    public void addColumnComboBox(JTable table, int colunmIndex, JComboBox comboBox) {
+    protected void addColumnComboBox(JTable table, int colunmIndex, JComboBox comboBox) {
         table.getColumnModel().getColumn(colunmIndex).setCellEditor(new DefaultCellEditor(comboBox));
     }
 
-    public void setColumnSize(JTable table, int... tamanho) {
+    protected void setColumnSize(JTable table, int... tamanho) {
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         for (int i = 0; i < table.getColumnCount(); i++) {
             table.getColumnModel().getColumn(i).setPreferredWidth(tamanho[i]);
         }
     }
 
-    @Override
-    public void mouseClicked(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-
-    }
-
+    //métodos de listeners
     @Override
     public void focusGained(FocusEvent e) {
         OnChangeListener.EventListener(e);
@@ -705,6 +596,31 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
     }
 
     @Override
+    public void mouseClicked(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
+    }
+
+    @Override
     public void itemStateChanged(ItemEvent e) {
 
     }
@@ -721,7 +637,7 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
 
     @Override
     public void windowClosed(WindowEvent e) {
-        //ControleInstancias.removeInstance(null);
+
     }
 
     @Override
@@ -744,4 +660,29 @@ public abstract class ListenerCBI implements ActionListener, ListSelectionListen
 
     }
 
+    @Override
+    public void valueChanged(ListSelectionEvent e) {
+
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+
+    }
+
+    @Override
+    public void caretUpdate(CaretEvent e) {
+        
+    }
+    
 }

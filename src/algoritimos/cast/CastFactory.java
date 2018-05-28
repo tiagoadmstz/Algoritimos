@@ -25,6 +25,8 @@ public class CastFactory {
                 object = object != null ? Long.parseLong(object.toString()) : null;
             } else if (Objects.equals(Integer.class, classe) | Objects.equals(int.class, classe)) {
                 object = object != null ? Integer.parseInt(object.toString()) : null;
+            } else if (Objects.equals(Double.class, classe) | Objects.equals(double.class, classe)){
+                object = object != null ? Double.parseDouble(object.toString()) : null;
             } else if (Objects.equals(Boolean.class, classe) | Objects.equals(boolean.class, classe)) {
                 object = object != null ? Boolean.parseBoolean(object.toString()) : false;
             } else if (Objects.equals(String.class, classe)) {
@@ -42,7 +44,7 @@ public class CastFactory {
             } else if (Objects.equals(LocalTime.class, classe)) {
                 object = object != null ? LocalTime.parse(object.toString(), DateTimeFormatter.ofPattern("HH:mm")) : null;
             } else if (Objects.equals(ZonedDateTime.class, classe)) {
-                object = object != null ? ZonedDateTime.of(LocalDate.parse(object.toString(), DateTimeFormatter.ofPattern("dd/MM/yyyy")), LocalTime.now(), ZoneId.systemDefault()): null;
+                object = object != null ? ZonedDateTime.of(LocalDate.parse(object.toString(), DateTimeFormatter.ofPattern("dd/MM/yyyy")), LocalTime.now(), ZoneId.systemDefault()) : null;
             } else if (Objects.equals(BigDecimal.class, classe)) {
                 object = object != null ? new BigDecimal(object.toString().replaceAll("^[\\w][\\p{Punct}][\\p{Space}]", "")) : null;
             }
@@ -57,6 +59,8 @@ public class CastFactory {
             return int.class;
         } else if (Objects.equals(Long.class, classe)) {
             return long.class;
+        } else if (Objects.equals(Double.class, classe)){
+            return boolean.class;
         } else if (Objects.equals(Boolean.class, classe)) {
             return boolean.class;
         }
