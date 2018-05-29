@@ -33,15 +33,7 @@ import javax.swing.JTextField;
  *
  * @author tiago.teixeira
  */
-public class ManipulaFrames {
-
-    public static void setFildsEnableDisable(JFrame form, boolean enable) {
-
-        for (Component comp : form.getComponents()) {
-            comp.setEnabled(enable);
-        }
-
-    }
+public class ManipulaFrames extends JFrame{
 
     /**
      * Método de manipulação de formulários para ativar e desativar componentes

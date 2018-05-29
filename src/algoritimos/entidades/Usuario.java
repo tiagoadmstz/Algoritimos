@@ -22,13 +22,16 @@ import javax.persistence.Table;
  * @author Tiago D. Teixeira
  */
 @Entity
-@Table(name = "USUARIOS")
+@Table(name = "cad_usuario")
 @Access(AccessType.PROPERTY)
-@NamedQueries({
-    @NamedQuery(name = "usuario.findAll", query = "SELECT u FROM Usuario AS u ORDER BY u.nomeUsuario")
+@NamedQueries(value = {
+    @NamedQuery(name = "usuario.findAll", query = "SELECT u FROM Usuario AS u ORDER BY u.nomeUsuario"),
+    @NamedQuery(name = "usuario.findByUser", query = "SELECT u FROM Usuario AS u WHERE u.usuario = :paramUser")
 })
 //@SequenceGenerator(name = "usuario_seq", sequenceName = "seq_usuario", initialValue = 1, allocationSize = 1)
 public class Usuario implements Serializable {
+
+    private static final long serialVersionUID = -6143251070152910169L;
 
     private Long id;
     private String nomeUsuario;

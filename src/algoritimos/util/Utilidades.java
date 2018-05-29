@@ -11,9 +11,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -152,10 +150,6 @@ public class Utilidades {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-    
-    public static void setLabelIcon(JLabel label, String path) {
-        label.setIcon(new ImageIcon(path));
     }
     
 }

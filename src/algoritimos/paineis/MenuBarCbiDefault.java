@@ -20,6 +20,8 @@ import javax.swing.JSeparator;
  */
 public class MenuBarCbiDefault extends JMenuBar {
 
+    private static final long serialVersionUID = -3214652169134201254L;
+
     private JMenu menuArquivo;
     private JMenuItem itemNovo;
     private JMenuItem itemEditar;

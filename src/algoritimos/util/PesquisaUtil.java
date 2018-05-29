@@ -5,8 +5,8 @@ package algoritimos.util;
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
-
+import algoritimos.regex.REGEX;
+import algoritimos.regex.RegexUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -19,27 +19,11 @@ import java.util.regex.Pattern;
 public class PesquisaUtil {
 
     public static List<?> pesquisaDinamica(List<?> lista, String nomeCampo, String strEntrada) {
-
         List<Object> listaResultado = new ArrayList();
-        String strPesquisa = geraStringPesquisaDinamica(strEntrada);
-        boolean resultado;
-        int i = 0;
 
-        for (Object obj : lista) {
-            if (!"".equals(nomeCampo)) {
-                Pattern p = Pattern.compile(".*" + nomeCampo + ".*=.*" + strPesquisa, Pattern.CASE_INSENSITIVE);
-                Matcher m = p.matcher(obj.toString());
-                resultado = m.matches();
-            } else {
-                Pattern p = Pattern.compile(strPesquisa, Pattern.CASE_INSENSITIVE);
-                Matcher m = p.matcher(obj.toString());
-                resultado = m.matches();
-            }
+        lista.stream().filter(ob -> ob.toString().matches(RegexUtil.getRegex(REGEX.CONTEM, nomeCampo.concat(" = ".concat(strEntrada)).replaceAll("\\p{Space}", ".*")))
+        ).forEach(ob -> listaResultado.add(ob));
 
-            if (resultado != false) {
-                listaResultado.add(i++, obj);
-            }
-        }
         return listaResultado;
     }
 
@@ -173,5 +157,5 @@ public class PesquisaUtil {
         return objects;
 
     }
-    
+
 }
